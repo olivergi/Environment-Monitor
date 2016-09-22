@@ -1,5 +1,7 @@
 package toa.enmo;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity {
 
     SensorControl sc = new SensorControl();
+    HomeScreenFragment hsf = new HomeScreenFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         System.out.println("HELLO");
 
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.add(R.id.frag_container, hsf);
+        ft.commit();
     }
 
     public void onClick(View v){
@@ -65,5 +71,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         //sc.sm.unregisterListener(sc);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (hsf.isVisible()){
+            System.out.println("Hello");
+            this.finish();
+        } else {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.frag_container, hsf);
+            ft.commit();
+        }
+
     }
 }
