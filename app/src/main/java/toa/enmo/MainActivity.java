@@ -1,5 +1,6 @@
 package toa.enmo;
 
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    SensorControl sc = new SensorControl();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +23,15 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("HELLO");
 
     }
+
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.btn1:
+                System.out.println("hello");
+                break;
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -41,5 +53,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //sc.sm.registerListener(sc, sc.mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //sc.sm.unregisterListener(sc);
     }
 }
