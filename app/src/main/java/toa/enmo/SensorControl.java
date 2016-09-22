@@ -14,7 +14,7 @@ public class SensorControl {
     Timer timer;
 
 
-    public class TempSensor implements SensorEventListener{
+    public class TempSensor implements SensorEventListener, Runnable{
 
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -25,7 +25,11 @@ public class SensorControl {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
         }
-    }
 
+        @Override
+        public void run() {
+
+        }
+    }
 
 }
