@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()){
             case R.id.btn1:
                 System.out.println("hello");
+
                 break;
         }
     }
