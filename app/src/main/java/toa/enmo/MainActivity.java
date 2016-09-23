@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     HomeScreenFragment hsf = new HomeScreenFragment();
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
+    DeviceFragment df = new DeviceFragment();
+    PairedFragment pf = new PairedFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +34,17 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btn1:
-                System.out.println("hello");
+                changeFragment("df");
                 break;
             case R.id.btn2:
                 changeFragment("cf");
                 break;
             case R.id.btn3:
                 changeFragment("af");
+                break;
+            case R.id.btn4:
+                changeFragment("pf");
+                break;
         }
     }
 
@@ -47,7 +53,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         switch (fragment){
             case "hsf":
-                transaction.setCustomAnimations(0, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.replace(R.id.frag_container, hsf);
+                break;
+            case "hsfLeft":
+                transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
                 break;
             case "cf":
@@ -55,10 +65,17 @@ public class MainActivity extends AppCompatActivity {
                 transaction.replace(R.id.frag_container, cf);
                 break;
             case "af":
-                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, af);
                 break;
-
+            case "df":
+                transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.replace(R.id.frag_container, df);
+                break;
+            case "pf":
+                transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.replace(R.id.frag_container, pf);
+                break;
         }
         transaction.addToBackStack(null);
         transaction.commit();
@@ -101,12 +118,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (hsf.isVisible()){
-            System.out.println("Hello");
-            this.finish();
+        if (!hsf.isVisible()){
+            if (af.isVisible() || df.isVisible()) {
+                changeFragment("hsf");
+            } else {
+                changeFragment("hsfLeft");
+            }
         } else {
-            changeFragment("hsf");
+            this.finish();
         }
-
     }
 }
