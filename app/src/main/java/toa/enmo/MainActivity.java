@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 transaction.replace(R.id.frag_container, df);
                 break;
             case "pf":
-                transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, pf);
                 break;
         }
