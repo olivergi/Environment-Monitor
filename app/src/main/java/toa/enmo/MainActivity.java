@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     SensorControl sc = new SensorControl();
     HomeScreenFragment hsf = new HomeScreenFragment();
     ConnectFragment cf = new ConnectFragment();
+    AnalysisFragment af = new AnalysisFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +36,28 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btn2:
                 changeFragment("cf");
+                break;
+            case R.id.btn3:
+                changeFragment("af");
         }
     }
 
     public void changeFragment (String fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
         switch (fragment){
             case "hsf":
+                transaction.setCustomAnimations(0, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
                 break;
             case "cf":
+                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, cf);
+                break;
+            case "af":
+                transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+                transaction.replace(R.id.frag_container, af);
+                break;
 
         }
         transaction.addToBackStack(null);
