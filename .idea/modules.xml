@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/EnMo.iml" filepath="$PROJECT_DIR$/EnMo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Environment-Monitor.iml" filepath="$PROJECT_DIR$/Environment-Monitor.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
