@@ -1,11 +1,11 @@
 package toa.enmo;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
+import android.app.Fragment;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
     SensorControl sc = new SensorControl();
     HomeScreenFragment hsf = new HomeScreenFragment();
+    ConnectFragment cf = new ConnectFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,20 +24,34 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        System.out.println("HELLO");
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.add(R.id.frag_container, hsf);
-        ft.commit();
+        changeFragment("hsf");
     }
 
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btn1:
                 System.out.println("hello");
-
                 break;
+            case R.id.btn2:
+                changeFragment("cf");
         }
+    }
+
+    public void changeFragment (String fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
+        switch (fragment){
+            case "hsf":
+                transaction.replace(R.id.frag_container, hsf);
+                break;
+            case "cf":
+                transaction.replace(R.id.frag_container, cf);
+
+        }
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
 
@@ -80,9 +95,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Hello");
             this.finish();
         } else {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.frag_container, hsf);
-            ft.commit();
+            changeFragment("hsf");
         }
 
     }

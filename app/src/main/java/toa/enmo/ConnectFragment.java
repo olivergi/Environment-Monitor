@@ -6,14 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Created by arttu on 9/22/16.
- */
-
 public class ConnectFragment extends Fragment {
-
-    public ConnectFragment() {
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
