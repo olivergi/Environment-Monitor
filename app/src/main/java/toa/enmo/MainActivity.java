@@ -8,6 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -22,7 +25,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     SensorControl sc = new SensorControl();
     HomeScreenFragment hsf = new HomeScreenFragment();
@@ -30,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
+    private SensorManager sm;
+    private Sensor accel;
+    private Sensor ambientTemp;
+    boolean registerChecker = false;
 
     BluetoothAdapter BA;
 
@@ -43,13 +50,21 @@ public class MainActivity extends AppCompatActivity {
         cf.theList = new ArrayList();
         BA = BluetoothAdapter.getDefaultAdapter();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+        registerReceiver(mReceiver, filter);
 
         changeFragment("hsf");
 
         if (!BA.isEnabled()){
             Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnOn, 0);
+        }
+
+        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        if (sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+            accel = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            ambientTemp = sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        } else {
+            toaster("No Temperature Sensor");
         }
     }
 
@@ -167,21 +182,62 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    public void toaster(String s){
+        Toast.makeText(this, s, Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public final void onAccuracyChanged(Sensor sensor, int i) {
+        if(df.isVisible()){
+            df.accText.setText(i == SensorManager.SENSOR_STATUS_ACCURACY_HIGH ? "HIGH" :
+                    (i == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM ? "MEDIUM" :
+                            (i == SensorManager.SENSOR_STATUS_ACCURACY_LOW ? "LOW" : "UNRELIABLE")));
+        }
+    }
+
+    // Sensor Check Method
+    @Override
+    public final void onSensorChanged(SensorEvent event) {
+        if(df.isVisible()){
+            switch(event.sensor.getType()){
+                case Sensor.TYPE_ACCELEROMETER:
+                    float values = event.values[0];
+                    df.accelText.setText(Float.toString(values));
+                    break;
+                case Sensor.TYPE_AMBIENT_TEMPERATURE:
+                    float tempValue = event.values[0];
+                    df.tempText.setText(Float.toString(tempValue) + " °C");
+                    break;
+                case Sensor.TYPE_RELATIVE_HUMIDITY:
+                    float humValues = event.values[0];
+                    df.tempText.setText(Float.toString(humValues));
+                    break;
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        //sc.sm.registerListener(sc, sc.mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        register();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //sc.sm.unregisterListener(sc);
+        sm.unregisterListener(this);
     }
 
     @Override
     public void onDestroy(){
         unregisterReceiver(mReceiver);
         super.onDestroy();
+    }
+
+    public void register(){
+        sm.registerListener(this, ambientTemp,
+                SensorManager.SENSOR_DELAY_NORMAL);
+        sm.registerListener(this, accel,
+                SensorManager.SENSOR_DELAY_NORMAL);
     }
 }

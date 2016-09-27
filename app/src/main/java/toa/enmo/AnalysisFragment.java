@@ -14,9 +14,6 @@ import com.jjoe64.graphview.series.*;
 
 public class AnalysisFragment extends Fragment {
 
-    public AnalysisFragment() {
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

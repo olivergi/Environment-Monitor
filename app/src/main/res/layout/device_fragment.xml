@@ -30,6 +30,22 @@
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textColor="@color/textGrey"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/temperatureText"
+                android:text="0 °C"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/textGrey"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/accText"
+                android:text="Accuracy"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/textGrey"/>
         </LinearLayout>
 
         <LinearLayout
@@ -49,6 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=""
+                android:id="@+id/accelText"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textColor="@color/textGrey"/>
