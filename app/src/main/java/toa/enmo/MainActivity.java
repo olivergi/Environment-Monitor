@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -43,9 +44,13 @@ public class MainActivity extends AppCompatActivity {
         BA = BluetoothAdapter.getDefaultAdapter();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
-        BA.startDiscovery();
 
         changeFragment("hsf");
+
+        if (!BA.isEnabled()){
+            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(turnOn, 0);
+        }
     }
 
     public void onClick(View v){
@@ -70,26 +75,34 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         switch (fragment){
             case "hsf":
+                // Home Screen Fragment
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
+                BA.startDiscovery();
                 break;
             case "hsfLeft":
+                // Home Screen Fragment (Left Animation)
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
                 break;
             case "cf":
+                // Connection Fragment
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, cf);
+                BA.startDiscovery();
                 break;
             case "af":
+                // Analysis Fragment
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, af);
                 break;
             case "df":
+                // Device Fragment
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, df);
                 break;
             case "pf":
+                // Paired Fragment
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, pf);
                 break;
@@ -119,18 +132,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //sc.sm.registerListener(sc, sc.mSensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        //sc.sm.unregisterListener(sc);
     }
 
     @Override
@@ -165,4 +166,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //sc.sm.registerListener(sc, sc.mSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //sc.sm.unregisterListener(sc);
+    }
+
+    @Override
+    public void onDestroy(){
+        unregisterReceiver(mReceiver);
+        super.onDestroy();
+    }
 }
