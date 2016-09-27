@@ -9,7 +9,8 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     tools:context="toa.enmo.HomeScreenFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/grey">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +39,8 @@
                 android:layout_height="wrap_content"
                 android:text="Device\nStatus"
                 android:textAlignment="center"
-                android:textSize="24sp"/>
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
         </LinearLayout>
 
         <LinearLayout
@@ -61,7 +63,8 @@
                 android:layout_height="wrap_content"
                 android:text="Connect"
                 android:textAlignment="center"
-                android:textSize="24sp"/>
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -94,7 +97,8 @@
                 android:layout_height="wrap_content"
                 android:text="Graphs"
                 android:textAlignment="center"
-                android:textSize="24sp"/>
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
         </LinearLayout>
 
         <LinearLayout
@@ -117,7 +121,8 @@
                 android:layout_height="wrap_content"
                 android:text="Paired Device"
                 android:textAlignment="center"
-                android:textSize="24sp"/>
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
         </LinearLayout>
     </LinearLayout>
 

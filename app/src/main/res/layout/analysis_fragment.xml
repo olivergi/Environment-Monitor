@@ -9,7 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/graphLayout">
+        android:id="@+id/graphLayout"
+        android:background="@color/textGrey">
 
         <com.jjoe64.graphview.GraphView
             android:layout_width="match_parent"
@@ -27,7 +28,8 @@
             android:layout_width="match_parent"
             android:id="@+id/analysisText"
             android:text="@string/analysis_text"
-            android:textSize="24sp">
+            android:textSize="24sp"
+            android:textColor="@color/textGrey">
         </TextView>
 
     </LinearLayout>
