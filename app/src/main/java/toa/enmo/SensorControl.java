@@ -39,57 +39,56 @@ final class SensorControl implements SensorEventListener, Runnable {
     public void run() {
         sm = (SensorManager) sensorContext.getSystemService(Context.SENSOR_SERVICE);
 
-        if (sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+        if(sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             accel = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         } else {
-            System.out.println("No ACCELEOMET Sensor");
+            System.out.println("No ACCELEOMETER Sensor");
         }
         if(sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null){
             ambientTemp = sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        }
-        else {
+        } else {
             System.out.println("NO AMBIENT TEMP SENSOR");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_GRAVITY) != null){
             gravity = sm.getDefaultSensor(Sensor.TYPE_GRAVITY);
-        }
-        else {
+        } else {
             System.out.println("NO GRAVITY SENSOR");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null){
             linAcc = sm.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        }
-        else {
+        } else {
             System.out.println("NO LINEAR ACCELERATION SENSOR");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_LIGHT) != null){
             light = sm.getDefaultSensor(Sensor.TYPE_LIGHT);
-        }
-        else {
+        } else {
             System.out.println("NO LIGHT SENSOR");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY) != null){
             light = sm.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
-        }
-        else {
+        } else {
             System.out.println("NO HUMIDITY SENSOR");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null){
             magnetic = sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        }
-        else{
+        } else{
             System.out.println("NO MAGNETIC FIELD SENSOR");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_PRESSURE) != null){
             pressure = sm.getDefaultSensor(Sensor.TYPE_PRESSURE);
-        }
-        else {
+        } else {
             System.out.println("NO PRESSURE SENSOR");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null){
             gyroscope = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        }
-        else{
+        } else{
             System.out.println("NO GYROSCOPE SENSOR");
         }
 
@@ -135,6 +134,7 @@ final class SensorControl implements SensorEventListener, Runnable {
             System.out.println("THERE IS NO ACCELERATION SENSOR");
         }
     }
+
     public void unregister(){
         sm.unregisterListener(this);
     }

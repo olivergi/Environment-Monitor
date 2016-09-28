@@ -44,8 +44,6 @@ public class MainActivity extends AppCompatActivity {
         sc = new SensorControl(this, df);
         sc.run();
 
-
-        cf.theList = new ArrayList();
         BA = BluetoothAdapter.getDefaultAdapter();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
@@ -57,9 +55,6 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(turnOn, 0);
         }
     }
-
-
-
 
     public void onClick(View v){
         switch (v.getId()){
@@ -86,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 // Home Screen Fragment
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
-                BA.startDiscovery();
                 break;
             case "hsfLeft":
                 // Home Screen Fragment (Left Animation)
@@ -97,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 // Connection Fragment
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, cf);
+                cf.theList = new ArrayList();
                 BA.startDiscovery();
                 break;
             case "af":
@@ -176,9 +171,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void toaster(String s){
-        Toast.makeText(this, s, Toast.LENGTH_SHORT);
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
-
 
     @Override
     protected void onResume() {
