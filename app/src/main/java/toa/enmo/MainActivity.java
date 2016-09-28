@@ -25,19 +25,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
-
-    SensorControl sc = new SensorControl();
+public class MainActivity extends AppCompatActivity {
+    SensorControl sc;
     HomeScreenFragment hsf = new HomeScreenFragment();
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
-    private SensorManager sm;
-    private Sensor accel;
-    private Sensor ambientTemp;
     boolean registerChecker = false;
-
     BluetoothAdapter BA;
 
     @Override
@@ -46,6 +41,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        sc = new SensorControl(this, df);
+        sc.run();
+
 
         cf.theList = new ArrayList();
         BA = BluetoothAdapter.getDefaultAdapter();
@@ -58,15 +56,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnOn, 0);
         }
-
-        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        if (sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-            accel = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            ambientTemp = sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        } else {
-            toaster("No Temperature Sensor");
-        }
     }
+
+
+
 
     public void onClick(View v){
         switch (v.getId()){
@@ -186,58 +179,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Toast.makeText(this, s, Toast.LENGTH_SHORT);
     }
 
-    @Override
-    public final void onAccuracyChanged(Sensor sensor, int i) {
-        if(df.isVisible()){
-            df.accText.setText(i == SensorManager.SENSOR_STATUS_ACCURACY_HIGH ? "HIGH" :
-                    (i == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM ? "MEDIUM" :
-                            (i == SensorManager.SENSOR_STATUS_ACCURACY_LOW ? "LOW" : "UNRELIABLE")));
-        }
-    }
-
-    // Sensor Check Method
-    @Override
-    public final void onSensorChanged(SensorEvent event) {
-        if(df.isVisible()){
-            switch(event.sensor.getType()){
-                case Sensor.TYPE_ACCELEROMETER:
-                    float values = event.values[0];
-                    df.accelText.setText(Float.toString(values));
-                    break;
-                case Sensor.TYPE_AMBIENT_TEMPERATURE:
-                    float tempValue = event.values[0];
-                    df.tempText.setText(Float.toString(tempValue) + " °C");
-                    break;
-                case Sensor.TYPE_RELATIVE_HUMIDITY:
-                    float humValues = event.values[0];
-                    df.tempText.setText(Float.toString(humValues));
-                    break;
-            }
-        }
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        register();
+        sc.register();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sm.unregisterListener(this);
+        sc.unregister();
     }
 
     @Override
     public void onDestroy(){
         unregisterReceiver(mReceiver);
+        sc.unregister();
         super.onDestroy();
-    }
-
-    public void register(){
-        sm.registerListener(this, ambientTemp,
-                SensorManager.SENSOR_DELAY_NORMAL);
-        sm.registerListener(this, accel,
-                SensorManager.SENSOR_DELAY_NORMAL);
     }
 }
