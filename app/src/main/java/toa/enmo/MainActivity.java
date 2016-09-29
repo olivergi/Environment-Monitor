@@ -191,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     cf.theList.add("Device");
                 }
-
                 // Add the address to an array to use when trying to pair
                 try {
                     cf.bluetoothDevices.add(device);
@@ -199,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     System.out.println("what: " + e);
                 }
-
                 // Update the array
                 if (cf.isVisible()) {
                     ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
@@ -207,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                toaster("Bond State Checked");
                 final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
                 final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
 

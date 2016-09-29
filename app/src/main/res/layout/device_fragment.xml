@@ -20,7 +20,7 @@
 
             <ImageView
                 android:layout_width="138dp"
-                android:layout_height="166dp"
+                android:layout_height="150dp"
                 android:src="@drawable/temperature" />
 
             <TextView
@@ -38,14 +38,6 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/textGrey"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/accText"
-                android:text="Accuracy"
-                android:textAlignment="center"
-                android:textSize="18sp"
-                android:textColor="@color/textGrey"/>
         </LinearLayout>
 
         <LinearLayout
@@ -54,20 +46,28 @@
             android:layout_weight="1"
             android:gravity="center"
             android:weightSum="1"
-            android:onClick="onClick"
             android:orientation="vertical">
 
             <ImageView
                 android:layout_width="138dp"
-                android:layout_height="166dp" />
+                android:layout_height="150dp"
+                android:src="@drawable/speed"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:id="@+id/accelText"
+                android:text="Accelerometer"
                 android:textAlignment="center"
                 android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:id="@+id/accelText"
+                android:textAlignment="center"
+                android:textSize="18sp"
                 android:textColor="@color/textGrey"/>
         </LinearLayout>
 
@@ -91,14 +91,24 @@
 
             <ImageView
                 android:layout_width="138dp"
-                android:layout_height="166dp" />
+                android:layout_height="150dp"
+                android:src="@drawable/pressure"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="Pressure"
                 android:textAlignment="center"
                 android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/pressureText"
+                android:text="0"
+                android:textAlignment="center"
+                android:textSize="18sp"
                 android:textColor="@color/textGrey"/>
         </LinearLayout>
 
@@ -112,14 +122,23 @@
 
             <ImageView
                 android:layout_width="138dp"
-                android:layout_height="166dp" />
+                android:layout_height="166dp"
+                android:src="@drawable/light"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="Light"
                 android:textAlignment="center"
                 android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/lightText"
+                android:text="0"
+                android:textAlignment="center"
+                android:textSize="18sp"
                 android:textColor="@color/textGrey"/>
         </LinearLayout>
     </LinearLayout>

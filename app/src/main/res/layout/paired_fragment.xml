@@ -3,4 +3,141 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/firstLinear"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:weightSum="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="138dp"
+                android:layout_height="150dp"
+                android:src="@drawable/temperature" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Temperature"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 °C"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/textGrey"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:weightSum="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="138dp"
+                android:layout_height="150dp"
+                android:src="@drawable/speed"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Accelerometer"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:id="@+id/accelText"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/textGrey"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/secondLinear"
+        android:layout_below="@+id/firstLinear"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:weightSum="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="138dp"
+                android:layout_height="150dp"
+                android:src="@drawable/pressure"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pressure"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/textGrey"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:weightSum="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="138dp"
+                android:layout_height="166dp"
+                android:src="@drawable/light"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Light"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textColor="@color/textGrey"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textColor="@color/textGrey"/>
+        </LinearLayout>
+    </LinearLayout>
+
 </LinearLayout>

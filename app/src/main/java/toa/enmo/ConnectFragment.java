@@ -36,7 +36,7 @@ public class ConnectFragment extends Fragment {
                 final String value = (String)adapter.getItemAtPosition(position);
                 AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
                 adb.setTitle("Connect to this device?");
-                adb.setMessage("Hello");
+                adb.setMessage("");
                 adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // connect to the device
@@ -56,7 +56,6 @@ public class ConnectFragment extends Fragment {
                 adb.show();
             }
         });
-
         return v;
     }
 
