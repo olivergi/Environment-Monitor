@@ -2,10 +2,12 @@ package toa.enmo;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.Sensor;
@@ -13,6 +15,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +26,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
-    boolean registerChecker = false;
     BluetoothAdapter BA;
+    ProgressDialog mProgressDlg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,16 +48,31 @@ public class MainActivity extends AppCompatActivity {
         sc = new SensorControl(this, df);
         sc.run();
 
+        // Assign the bluetooth adapter and register the broadcast receiver
         BA = BluetoothAdapter.getDefaultAdapter();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
 
         changeFragment("hsf");
 
+        // If Bluetooth is not enabled, prompt the device to turn on
         if (!BA.isEnabled()){
             Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnOn, 0);
         }
+
+        mProgressDlg = new ProgressDialog(this);
+
+        mProgressDlg.setMessage("Scanning...");
+        mProgressDlg.setCancelable(false);
+        mProgressDlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mProgressDlg.dismiss();
+
+                BA.cancelDiscovery();
+            }
+        });
     }
 
     public void onClick(View v){
@@ -93,6 +112,15 @@ public class MainActivity extends AppCompatActivity {
                 transaction.replace(R.id.frag_container, cf);
                 cf.theList = new ArrayList();
                 BA.startDiscovery();
+                // Show the progress dialog
+                mProgressDlg.show();
+                // Create a timer to dismiss the dialog
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        mProgressDlg.dismiss();
+                    }
+                }, 10000);
                 break;
             case "af":
                 // Analysis Fragment
@@ -163,12 +191,55 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     cf.theList.add("Device");
                 }
+
+                // Add the address to an array to use when trying to pair
+                try {
+                    cf.bluetoothDevices.add(device);
+
+                } catch (Exception e) {
+                    System.out.println("what: " + e);
+                }
+
+                // Update the array
                 if (cf.isVisible()) {
                     ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
                 }
             }
+
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+
+                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
+                    toaster("Paired");
+                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED) {
+                    toaster("Unpaired");
+                }
+            }
+
         }
     };
+
+    // Do not delete yet, may be needed
+
+   /* private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
+
+                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
+                    toaster("Paired");
+                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED) {
+                    toaster("Unpaired");
+                }
+            }
+        }
+    };*/
 
     public void toaster(String s){
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();

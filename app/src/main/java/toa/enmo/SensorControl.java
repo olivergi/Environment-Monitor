@@ -76,7 +76,7 @@ final class SensorControl implements SensorEventListener, Runnable {
 
         if(sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null){
             magnetic = sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        } else{
+        } else {
             System.out.println("NO MAGNETIC FIELD SENSOR");
         }
 
@@ -88,7 +88,7 @@ final class SensorControl implements SensorEventListener, Runnable {
 
         if(sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null){
             gyroscope = sm.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        } else{
+        } else {
             System.out.println("NO GYROSCOPE SENSOR");
         }
 
