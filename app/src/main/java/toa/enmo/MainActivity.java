@@ -5,11 +5,14 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -20,16 +23,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import com.mbientlab.metawear.MetaWearBleService;
+import com.mbientlab.metawear.MetaWearBoard;
+import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
+
+import android.os.IBinder;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
+    private MetaWearBleService.LocalBinder serviceBinder;
+    private final String MW_MAC_ADDRESS= "ED:17:4E:0A:7C:2E";
+    private MetaWearBoard mwBoard;
     SensorControl sc;
     HomeScreenFragment hsf = new HomeScreenFragment();
     ConnectFragment cf = new ConnectFragment();
@@ -48,11 +60,16 @@ public class MainActivity extends AppCompatActivity {
         sc = new SensorControl(this, df);
         sc.run();
 
+        // Bind the Metawear Service
+        getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
+                this, Context.BIND_AUTO_CREATE);
+
         // Assign the bluetooth adapter and register the broadcast receiver
         BA = BluetoothAdapter.getDefaultAdapter();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
 
+        // UI Method to display the Home Screen Fragment
         changeFragment("hsf");
 
         // If Bluetooth is not enabled, prompt the device to turn on
@@ -188,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 // Add the name and address to an array adapter to show in a ListView
                 if (device.getName() != null) {
                     cf.theList.add(device.getName());
+                    System.out.println(device.getName() + "        " + device.getAddress());
                 } else {
                     cf.theList.add("Device");
                 }
@@ -244,6 +262,17 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
+
+    public void retrieveBoard() {
+        final BluetoothManager btManager=
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        final BluetoothDevice remoteDevice =
+                btManager.getAdapter().getRemoteDevice(MW_MAC_ADDRESS);
+
+        // Create a MetaWear board object for the Bluetooth Device
+        mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -261,5 +290,38 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(mReceiver);
         sc.unregister();
         super.onDestroy();
+        getApplicationContext().unbindService(this);
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        serviceBinder = (MetaWearBleService.LocalBinder) iBinder;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName componentName) {
+
+    }
+
+    private final ConnectionStateHandler stateHandler= new ConnectionStateHandler() {
+        @Override
+        public void connected() {
+            Log.i("MainActivity", "Connected");
+        }
+
+        @Override
+        public void disconnected() {
+            Log.i("MainActivity", "Connected Lost");
+        }
+
+        @Override
+        public void failure(int status, Throwable error) {
+            Log.e("MainActivity", "Error connecting", error);
+        }
+    };
+
+    public void connectBoard() {
+        mwBoard.setConnectionStateHandler(stateHandler);
+        mwBoard.connect();
     }
 }
