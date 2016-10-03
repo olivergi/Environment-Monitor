@@ -136,6 +136,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         mProgressDlg.dismiss();
+
+                        try {
+                            retrieveBoard();
+                            connectBoard();
+                        } catch (Exception e) {
+                            System.out.println("Error: " + e);
+                        }
                     }
                 }, 10000);
                 break;
@@ -269,8 +276,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         final BluetoothDevice remoteDevice =
                 btManager.getAdapter().getRemoteDevice(MW_MAC_ADDRESS);
 
-        // Create a MetaWear board object for the Bluetooth Device
-        mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
+        System.out.println("Retrieving board \n " + "remotedevice: " +remoteDevice);
+
+        if (remoteDevice != null) {
+            // Create a MetaWear board object for the Bluetooth Device
+            System.out.println("Remotedevice is alive");
+            mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
+        } else {
+            System.out.println("This fucker is null");
+        }
     }
 
     @Override
