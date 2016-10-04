@@ -22,13 +22,17 @@ public class ConnectFragment extends Fragment {
     ArrayList<BluetoothDevice> bluetoothDevices = new ArrayList<>();
     ListView lv;
     BluetoothControl bc;
-    Boolean deviceConnected = false;
+    Boolean isDeviceConnected = false;
+    BluetoothDevice connectedDevice;
+    BluetoothDevice deviceItem;
+    Thread bcThread;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.connect_fragment, container, false);
         lv = (ListView) v.findViewById(R.id.listView);
+        bcThread = new Thread(bc);
 
         ArrayAdapter adapter = new ArrayAdapter(getActivity().getApplicationContext(),
                 android.R.layout.simple_list_item_1, theList);
@@ -38,31 +42,36 @@ public class ConnectFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapter, View v, final int position, long arg3) {
                 final String value = (String)adapter.getItemAtPosition(position);
                 AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
-                if (!deviceConnected){
+                 deviceItem = bluetoothDevices.get(position);
+
+                if (!isDeviceConnected && !(deviceItem == connectedDevice)){
                     adb.setTitle("Connect to this device?");
                     adb.setMessage("");
                     adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // connect to the device
                             System.out.println("making connection");
-                            BluetoothDevice device = bluetoothDevices.get(position);
 
-                            String address = device.getAddress();
+                            String address = deviceItem.getAddress();
                             // If there is not a connected device yet, retrieve and connect
                             bc.retrieveBoard(address);
-                            bc.start();
+
+                            System.out.println(bcThread.getState());
+
+                            bcThread.start();
+
+                            connectedDevice = bluetoothDevices.get(position);
 
                         }
                     });
                 } else {
-                    adb.setTitle("Disconnect from this device?");
-                    adb.setMessage("You are already connected to this device. Do you want to disconnect?");
+                    adb.setTitle("You are already connected.");
+                    adb.setMessage("There can only be one connection.\nDo you want to disconnect?");
                     adb.setPositiveButton("Disconnect", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Disconnect from the device
                             System.out.println("Disconnecting");
 
-                            bc.interrupt();
                             bc.disconnectBoard();
 
                         }

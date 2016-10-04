@@ -1,12 +1,18 @@
 package toa.enmo;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
@@ -16,18 +22,24 @@ import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
  * Created by arttu on 10/3/16.
  */
 
-public class BluetoothControl extends Thread implements ServiceConnection {
+public class BluetoothControl implements ServiceConnection, Runnable {
     private Context activityContext;
     private PairedFragment pFrag;
     private ConnectFragment cFrag;
     private MetaWearBleService.LocalBinder serviceBinder;
     private MetaWearBoard mwBoard;
+    BluetoothAdapter BA;
 
 
     public BluetoothControl (Context c, PairedFragment f, ConnectFragment cf) {
         activityContext = c;
         pFrag = f;
         cFrag = cf;
+
+        // Assign the bluetooth adapter and register the broadcast receiver
+        BA = BluetoothAdapter.getDefaultAdapter();
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        activityContext.registerReceiver(mReceiver, filter);
     }
 
     public void run() {
@@ -60,18 +72,22 @@ public class BluetoothControl extends Thread implements ServiceConnection {
         }
     }
 
-
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler() {
         @Override
         public void connected() {
             Log.i("MainActivity", "Connected");
-            cFrag.deviceConnected = true;
+            cFrag.isDeviceConnected = true;
+            Looper.prepare();
+            cFrag.toaster("Connected to " + cFrag.connectedDevice.getName());
+
         }
 
         @Override
         public void disconnected() {
             Log.i("MainActivity", "Connected Lost");
-            cFrag.deviceConnected = false;
+            cFrag.isDeviceConnected = false;
+            cFrag.connectedDevice = null;
+
         }
 
         @Override
@@ -89,4 +105,40 @@ public class BluetoothControl extends Thread implements ServiceConnection {
     public void onServiceDisconnected(ComponentName componentName) {
 
     }
+
+     BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            // When discovery finds a device
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                // Get the BluetoothDevice object from the Intent
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                // Check that the name contains words that relate to the sensor
+                String tempString;
+                tempString = device.getName();
+                if (tempString != null){
+                    tempString = tempString.toLowerCase();
+
+                    if (tempString.contains("wear") || tempString.contains("meta")){
+                        cFrag.theList.add(device.getName());
+
+                        // Add the address to an array to use when trying to pair
+                        try {
+                            cFrag.bluetoothDevices.add(device);
+
+                        } catch (Exception e) {
+                            System.out.println("what: " + e);
+                        }
+                    }
+                }
+
+                System.out.println(device.getName() + "        " + device.getAddress());
+                // Update the array
+                if (cFrag.isVisible()) {
+                    ((ArrayAdapter) cFrag.lv.getAdapter()).notifyDataSetChanged();
+                }
+            }
+
+        }
+    };
 }

@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity  {
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
-    BluetoothAdapter BA;
     ProgressDialog mProgressDlg;
 
     @Override
@@ -63,20 +62,14 @@ public class MainActivity extends AppCompatActivity  {
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 bc, Context.BIND_AUTO_CREATE);
 
-        // Assign the bluetooth adapter and register the broadcast receiver
-        BA = BluetoothAdapter.getDefaultAdapter();
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(mReceiver, filter);
-
         // UI Method to display the Home Screen Fragment
         changeFragment("hsf");
 
         // If Bluetooth is not enabled, prompt the device to turn on
-        if (!BA.isEnabled()){
+        if (!bc.BA.isEnabled()){
             Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnOn, 0);
-        }        registerReceiver(mReceiver, filter);
-
+        }
 
         mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Scanning...");
@@ -86,7 +79,7 @@ public class MainActivity extends AppCompatActivity  {
             public void onClick(DialogInterface dialog, int which) {
                 mProgressDlg.dismiss();
 
-                BA.cancelDiscovery();
+                bc.BA.cancelDiscovery();
             }
         });
     }
@@ -107,15 +100,16 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case R.id.scanButton:
                 cf.theList.clear();
+                cf.bluetoothDevices.clear();
                 ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
 
-                BA.startDiscovery();
+                bc.BA.startDiscovery();
                 mProgressDlg.show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         mProgressDlg.dismiss();
-                        BA.cancelDiscovery();
+                        bc.BA.cancelDiscovery();
                     }
                 }, 10000);
                 break;
@@ -141,7 +135,7 @@ public class MainActivity extends AppCompatActivity  {
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, cf);
                 cf.theList = new ArrayList();
-                BA.startDiscovery();
+                bc.BA.startDiscovery();
                 // Show the progress dialog
                 mProgressDlg.show();
                 // Create a timer to dismiss the dialog
@@ -149,7 +143,7 @@ public class MainActivity extends AppCompatActivity  {
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         mProgressDlg.dismiss();
-                        BA.cancelDiscovery();
+                        bc.BA.cancelDiscovery();
                     }
                 }, 10000);
                 break;
@@ -172,7 +166,6 @@ public class MainActivity extends AppCompatActivity  {
         transaction.addToBackStack(null);
         transaction.commit();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -209,42 +202,6 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    // Check that the name contains words that relate to the sensor
-                    String tempString;
-                    tempString = device.getName();
-                    if (tempString != null){
-                        tempString = tempString.toLowerCase();
-
-                        if (tempString.contains("wear") || tempString.contains("meta")){
-                            cf.theList.add(device.getName());
-
-                            // Add the address to an array to use when trying to pair
-                            try {
-                                cf.bluetoothDevices.add(device);
-
-                            } catch (Exception e) {
-                                System.out.println("what: " + e);
-                            }
-                        }
-                    }
-
-                    System.out.println(device.getName() + "        " + device.getAddress());
-                // Update the array
-                if (cf.isVisible()) {
-                    ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
-                }
-            }
-
-        }
-    };
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -259,7 +216,8 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     public void onDestroy(){
-        unregisterReceiver(mReceiver);
+        bc.disconnectBoard();
+        unregisterReceiver(bc.mReceiver);
         sc.unregister();
         super.onDestroy();
         getApplicationContext().unbindService(bc);
