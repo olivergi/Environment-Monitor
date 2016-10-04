@@ -18,7 +18,6 @@ import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
 public class BluetoothControl extends Thread implements ServiceConnection {
     private Context activityContext;
-    MainActivity context = (MainActivity)activityContext;
     private PairedFragment pFrag;
     private ConnectFragment cFrag;
     private MetaWearBleService.LocalBinder serviceBinder;

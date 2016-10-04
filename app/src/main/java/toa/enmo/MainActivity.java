@@ -75,10 +75,10 @@ public class MainActivity extends AppCompatActivity  {
         if (!BA.isEnabled()){
             Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(turnOn, 0);
-        }
+        }        registerReceiver(mReceiver, filter);
+
 
         mProgressDlg = new ProgressDialog(this);
-
         mProgressDlg.setMessage("Scanning...");
         mProgressDlg.setCancelable(false);
         mProgressDlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
@@ -106,6 +106,9 @@ public class MainActivity extends AppCompatActivity  {
                 changeFragment("pf");
                 break;
             case R.id.scanButton:
+                cf.theList.clear();
+                ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
+
                 BA.startDiscovery();
                 mProgressDlg.show();
                 Handler handler = new Handler();
@@ -216,17 +219,19 @@ public class MainActivity extends AppCompatActivity  {
                     // Check that the name contains words that relate to the sensor
                     String tempString;
                     tempString = device.getName();
-                    tempString = tempString.toLowerCase();
+                    if (tempString != null){
+                        tempString = tempString.toLowerCase();
 
-                    if (tempString.contains("wear") || tempString.contains("meta")){
-                        cf.theList.add(device.getName());
+                        if (tempString.contains("wear") || tempString.contains("meta")){
+                            cf.theList.add(device.getName());
 
-                        // Add the address to an array to use when trying to pair
-                        try {
-                            cf.bluetoothDevices.add(device);
+                            // Add the address to an array to use when trying to pair
+                            try {
+                                cf.bluetoothDevices.add(device);
 
-                        } catch (Exception e) {
-                            System.out.println("what: " + e);
+                            } catch (Exception e) {
+                                System.out.println("what: " + e);
+                            }
                         }
                     }
 
