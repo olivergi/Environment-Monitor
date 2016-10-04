@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class ConnectFragment extends Fragment {
     ArrayList theList;
     ArrayList<BluetoothDevice> bluetoothDevices = new ArrayList<>();
     ListView lv;
+    BluetoothControl bc;
+    Boolean deviceConnected = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,23 +38,36 @@ public class ConnectFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapter, View v, final int position, long arg3) {
                 final String value = (String)adapter.getItemAtPosition(position);
                 AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
-                adb.setTitle("Connect to this device?");
-                adb.setMessage("");
-                adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // connect to the device
-                        System.out.println("making connection");
-                        BluetoothDevice device = bluetoothDevices.get(position);
+                if (!deviceConnected){
+                    adb.setTitle("Connect to this device?");
+                    adb.setMessage("");
+                    adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // connect to the device
+                            System.out.println("making connection");
+                            BluetoothDevice device = bluetoothDevices.get(position);
 
-                        if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                            System.out.println("unpairing device");
-                            unpairDevice(device);
-                        } else {
-                            System.out.println("pairing device");
-                            pairDevice(device);
+                            String address = device.getAddress();
+                            // If there is not a connected device yet, retrieve and connect
+                            bc.retrieveBoard(address);
+                            bc.start();
+
                         }
-                    }
-                });
+                    });
+                } else {
+                    adb.setTitle("Disconnect from this device?");
+                    adb.setMessage("You are already connected to this device. Do you want to disconnect?");
+                    adb.setPositiveButton("Disconnect", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Disconnect from the device
+                            System.out.println("Disconnecting");
+
+                            bc.interrupt();
+                            bc.disconnectBoard();
+
+                        }
+                    });
+                }
                 adb.setNegativeButton("No", null);
                 adb.show();
             }
@@ -59,22 +75,7 @@ public class ConnectFragment extends Fragment {
         return v;
     }
 
-
-    public void pairDevice(BluetoothDevice device) {
-        try {
-            Method method = device.getClass().getMethod("createBond", (Class[]) null);
-            method.invoke(device, (Object[]) null);
-        } catch (Exception e) {
-            System.out.println("pair error: " + e);
-        }
-    }
-
-    public void unpairDevice(BluetoothDevice device) {
-        try {
-            Method method = device.getClass().getMethod("removeBond", (Class[]) null);
-            method.invoke(device, (Object[]) null);
-        } catch (Exception e) {
-            System.out.println("unpair error: " + e);
-        }
+    public void toaster(String s){
+        Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
     }
 }

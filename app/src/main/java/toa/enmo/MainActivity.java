@@ -31,18 +31,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
-import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
 import android.os.IBinder;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements ServiceConnection {
-    private MetaWearBleService.LocalBinder serviceBinder;
-    private final String MW_MAC_ADDRESS= "ED:17:4E:0A:7C:2E";
-    private MetaWearBoard mwBoard;
+public class MainActivity extends AppCompatActivity  {
     SensorControl sc;
+    BluetoothControl bc;
     HomeScreenFragment hsf = new HomeScreenFragment();
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
@@ -58,11 +55,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         sc = new SensorControl(this, df);
+        bc = new BluetoothControl(this, pf, cf);
+        cf.bc = bc;
         sc.run();
 
         // Bind the Metawear Service
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
-                this, Context.BIND_AUTO_CREATE);
+                bc, Context.BIND_AUTO_CREATE);
 
         // Assign the bluetooth adapter and register the broadcast receiver
         BA = BluetoothAdapter.getDefaultAdapter();
@@ -106,6 +105,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             case R.id.btn4:
                 changeFragment("pf");
                 break;
+            case R.id.scanButton:
+                BA.startDiscovery();
+                mProgressDlg.show();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        mProgressDlg.dismiss();
+                        BA.cancelDiscovery();
+                    }
+                }, 10000);
+                break;
         }
     }
 
@@ -136,13 +146,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 handler.postDelayed(new Runnable() {
                     public void run() {
                         mProgressDlg.dismiss();
-
-                        try {
-                            retrieveBoard();
-                            connectBoard();
-                        } catch (Exception e) {
-                            System.out.println("Error: " + e);
-                        }
+                        BA.cancelDiscovery();
                     }
                 }, 10000);
                 break;
@@ -209,83 +213,32 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // Add the name and address to an array adapter to show in a ListView
-                if (device.getName() != null) {
-                    cf.theList.add(device.getName());
-                    System.out.println(device.getName() + "        " + device.getAddress());
-                } else {
-                    cf.theList.add("Device");
-                }
-                // Add the address to an array to use when trying to pair
-                try {
-                    cf.bluetoothDevices.add(device);
+                    // Check that the name contains words that relate to the sensor
+                    String tempString;
+                    tempString = device.getName();
+                    tempString = tempString.toLowerCase();
 
-                } catch (Exception e) {
-                    System.out.println("what: " + e);
-                }
+                    if (tempString.contains("wear") || tempString.contains("meta")){
+                        cf.theList.add(device.getName());
+
+                        // Add the address to an array to use when trying to pair
+                        try {
+                            cf.bluetoothDevices.add(device);
+
+                        } catch (Exception e) {
+                            System.out.println("what: " + e);
+                        }
+                    }
+
+                    System.out.println(device.getName() + "        " + device.getAddress());
                 // Update the array
                 if (cf.isVisible()) {
                     ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
                 }
             }
 
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                toaster("Bond State Checked");
-                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
-                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    toaster("Paired");
-                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED) {
-                    toaster("Unpaired");
-                }
-            }
-
         }
     };
-
-    // Do not delete yet, may be needed
-
-   /* private final BroadcastReceiver mPairReceiver = new BroadcastReceiver() {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
-                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
-                final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, BluetoothDevice.ERROR);
-
-                if (state == BluetoothDevice.BOND_BONDED && prevState == BluetoothDevice.BOND_BONDING) {
-                    toaster("Paired");
-                } else if (state == BluetoothDevice.BOND_NONE && prevState == BluetoothDevice.BOND_BONDED) {
-                    toaster("Unpaired");
-                }
-            }
-        }
-    };*/
-
-    public void toaster(String s){
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void retrieveBoard() {
-        final BluetoothManager btManager=
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        final BluetoothDevice remoteDevice =
-                btManager.getAdapter().getRemoteDevice(MW_MAC_ADDRESS);
-
-        System.out.println("Retrieving board \n " + "remotedevice: " +remoteDevice);
-
-        if (remoteDevice != null) {
-            // Create a MetaWear board object for the Bluetooth Device
-            System.out.println("Remotedevice is alive");
-            mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
-        } else {
-            System.out.println("This fucker is null");
-        }
-    }
 
     @Override
     protected void onResume() {
@@ -304,38 +257,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         unregisterReceiver(mReceiver);
         sc.unregister();
         super.onDestroy();
-        getApplicationContext().unbindService(this);
+        getApplicationContext().unbindService(bc);
     }
 
-    @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        serviceBinder = (MetaWearBleService.LocalBinder) iBinder;
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName componentName) {
-
-    }
-
-    private final ConnectionStateHandler stateHandler= new ConnectionStateHandler() {
-        @Override
-        public void connected() {
-            Log.i("MainActivity", "Connected");
-        }
-
-        @Override
-        public void disconnected() {
-            Log.i("MainActivity", "Connected Lost");
-        }
-
-        @Override
-        public void failure(int status, Throwable error) {
-            Log.e("MainActivity", "Error connecting", error);
-        }
-    };
-
-    public void connectBoard() {
-        mwBoard.setConnectionStateHandler(stateHandler);
-        mwBoard.connect();
-    }
 }
