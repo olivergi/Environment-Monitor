@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity  {
         setSupportActionBar(toolbar);
         sc = new SensorControl(this, df);
         bc = new BluetoothControl(this, pf, cf);
-        cf.bc = bc;
         sc.run();
 
         // Bind the Metawear Service

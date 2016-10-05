@@ -15,8 +15,18 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.mbientlab.metawear.AsyncOperation;
+import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
+import com.mbientlab.metawear.RouteManager;
+import com.mbientlab.metawear.UnsupportedModuleException;
+import com.mbientlab.metawear.data.CartesianFloat;
+import com.mbientlab.metawear.module.Accelerometer;
+import com.mbientlab.metawear.module.Bmi160Accelerometer;
+import com.mbientlab.metawear.module.Led;
+import com.mbientlab.metawear.module.Switch;
+
 import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
 /**
@@ -28,7 +38,7 @@ public class BluetoothControl implements ServiceConnection {
     private PairedFragment pFrag;
     private ConnectFragment cFrag;
     private MetaWearBleService.LocalBinder serviceBinder;
-    private MetaWearBoard mwBoard;
+    MetaWearBoard mwBoard;
     BluetoothAdapter BA;
 
 
@@ -50,18 +60,15 @@ public class BluetoothControl implements ServiceConnection {
 
     public void createConnection() {
         Thread thread = new Thread(new Runnable() {
-
             public void run() {
                 System.out.println("thread running");
                     connectBoard();
-
-                    //cFrag.toaster("Connected to :" + cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex));
                 }
 
         });
         thread.start();
-
     }
+
     public void connectBoard() {
         mwBoard.connect();
     }
@@ -108,6 +115,8 @@ public class BluetoothControl implements ServiceConnection {
         @Override
         public void failure(int status, Throwable error) {
             Log.e("MainActivity", "Error connecting", error);
+            cFrag.isDeviceConnected = false;
+            cFrag.connectedDevice = null;
         }
     };
 
@@ -156,4 +165,17 @@ public class BluetoothControl implements ServiceConnection {
 
         }
     };
+
+    public void registerModule() {
+        try {
+            final Switch switchModule = mwBoard.getModule(Switch.class);
+            final Led ledModule = mwBoard.getModule(Led.class);
+            //accelModule = mwBoard.getModule(Accelerometer.class);
+
+            switchModule.routeData().fromSensor();
+        } catch (UnsupportedModuleException e) {
+            Log.e("MainActivity", "Module not present", e);
+        }
+    }
+
 }

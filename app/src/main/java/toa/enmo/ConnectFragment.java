@@ -22,7 +22,6 @@ public class ConnectFragment extends Fragment {
     ArrayList theList;
     ArrayList<BluetoothDevice> bluetoothDevices = new ArrayList<>();
     ListView lv;
-    BluetoothControl bc;
     Boolean isDeviceConnected = false;
     BluetoothDevice connectedDevice;
     int connectedDeviceIndex = 0;
@@ -54,11 +53,11 @@ public class ConnectFragment extends Fragment {
 
                             String address = deviceItem.getAddress();
                             // If there is not a connected device yet, retrieve and connect
-                            bc.retrieveBoard(address);
+                            getBC().retrieveBoard(address);
 
                             connectedDeviceIndex = position;
 
-                            bc.createConnection();
+                            getBC().createConnection();
 
                         }
                     });
@@ -70,7 +69,7 @@ public class ConnectFragment extends Fragment {
                             // Disconnect from the device
                             System.out.println("Disconnecting");
 
-                            bc.disconnectBoard();
+                            getBC().disconnectBoard();
 
                         }
                     });
@@ -80,6 +79,10 @@ public class ConnectFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    private BluetoothControl getBC(){
+       return ((MainActivity)getActivity()).bc;
     }
 
 }

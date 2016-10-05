@@ -34,6 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0 °C"
+                android:id="@+id/pairedTempText"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/textGrey"/>
