@@ -3,6 +3,7 @@ package toa.enmo;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -24,15 +25,14 @@ public class ConnectFragment extends Fragment {
     BluetoothControl bc;
     Boolean isDeviceConnected = false;
     BluetoothDevice connectedDevice;
+    int connectedDeviceIndex = 0;
     BluetoothDevice deviceItem;
-    Thread bcThread;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.connect_fragment, container, false);
         lv = (ListView) v.findViewById(R.id.listView);
-        bcThread = new Thread(bc);
 
         ArrayAdapter adapter = new ArrayAdapter(getActivity().getApplicationContext(),
                 android.R.layout.simple_list_item_1, theList);
@@ -40,11 +40,11 @@ public class ConnectFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View v, final int position, long arg3) {
-                final String value = (String)adapter.getItemAtPosition(position);
+                final String value = (String) adapter.getItemAtPosition(position);
                 AlertDialog.Builder adb = new AlertDialog.Builder(getActivity());
-                 deviceItem = bluetoothDevices.get(position);
+                deviceItem = bluetoothDevices.get(position);
 
-                if (!isDeviceConnected && !(deviceItem == connectedDevice)){
+                if (!isDeviceConnected && !(deviceItem == connectedDevice)) {
                     adb.setTitle("Connect to this device?");
                     adb.setMessage("");
                     adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -56,11 +56,9 @@ public class ConnectFragment extends Fragment {
                             // If there is not a connected device yet, retrieve and connect
                             bc.retrieveBoard(address);
 
-                            System.out.println(bcThread.getState());
+                            connectedDeviceIndex = position;
 
-                            bcThread.start();
-
-                            connectedDevice = bluetoothDevices.get(position);
+                            bc.createConnection();
 
                         }
                     });
@@ -84,7 +82,4 @@ public class ConnectFragment extends Fragment {
         return v;
     }
 
-    public void toaster(String s){
-        Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
-    }
 }

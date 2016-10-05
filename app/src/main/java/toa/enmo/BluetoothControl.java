@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
@@ -22,7 +23,7 @@ import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
  * Created by arttu on 10/3/16.
  */
 
-public class BluetoothControl implements ServiceConnection, Runnable {
+public class BluetoothControl implements ServiceConnection {
     private Context activityContext;
     private PairedFragment pFrag;
     private ConnectFragment cFrag;
@@ -42,12 +43,26 @@ public class BluetoothControl implements ServiceConnection, Runnable {
         activityContext.registerReceiver(mReceiver, filter);
     }
 
-    public void run() {
-        connectBoard();
+
+    public void toaster(String s) {
+        Toast.makeText(activityContext, s, Toast.LENGTH_SHORT).show();
     }
 
+    public void createConnection() {
+        Thread thread = new Thread(new Runnable() {
+
+            public void run() {
+                System.out.println("thread running");
+                    connectBoard();
+
+                    //cFrag.toaster("Connected to :" + cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex));
+                }
+
+        });
+        thread.start();
+
+    }
     public void connectBoard() {
-        mwBoard.setConnectionStateHandler(stateHandler);
         mwBoard.connect();
     }
 
@@ -67,6 +82,7 @@ public class BluetoothControl implements ServiceConnection, Runnable {
             // Create a MetaWear board object for the Bluetooth Device
             System.out.println("Remotedevice is alive");
             mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
+            mwBoard.setConnectionStateHandler(stateHandler);
         } else {
             System.out.println("This fucker is null");
         }
@@ -77,14 +93,13 @@ public class BluetoothControl implements ServiceConnection, Runnable {
         public void connected() {
             Log.i("MainActivity", "Connected");
             cFrag.isDeviceConnected = true;
-            Looper.prepare();
-            cFrag.toaster("Connected to " + cFrag.connectedDevice.getName());
+            cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
 
         }
 
         @Override
         public void disconnected() {
-            Log.i("MainActivity", "Connected Lost");
+            Log.i("MainActivity", "Disconnected");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
 
