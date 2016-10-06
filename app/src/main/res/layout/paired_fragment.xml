@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:id="@+id/accelText"
+                android:id="@+id/pairedAccelText"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/textGrey"/>
@@ -105,6 +105,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/pairedPressureText"
                 android:text="0"
                 android:textAlignment="center"
                 android:textSize="18sp"
@@ -135,6 +136,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="0"
+                android:id="@+id/pairedLightText"
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textColor="@color/textGrey"/>

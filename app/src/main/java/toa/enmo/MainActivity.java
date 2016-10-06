@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity  {
                 bc.BA.cancelDiscovery();
             }
         });
+
     }
 
     public void onClick(View v){
@@ -94,7 +95,11 @@ public class MainActivity extends AppCompatActivity  {
                 changeFragment("af");
                 break;
             case R.id.btn4:
-                changeFragment("pf");
+                if (cf.connectedDevice != null){
+                    changeFragment("pf");
+                } else {
+                    bc.toaster("No Device Connected");
+                }
                 break;
             case R.id.scanButton:
                 cf.theList.clear();

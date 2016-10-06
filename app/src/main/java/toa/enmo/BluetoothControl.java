@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
@@ -54,8 +55,14 @@ public class BluetoothControl implements ServiceConnection {
     }
 
 
-    public void toaster(String s) {
-        Toast.makeText(activityContext, s, Toast.LENGTH_SHORT).show();
+    public void toaster(final String s) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+            @Override
+            public void run() {
+                Toast.makeText(activityContext, s, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void createConnection() {
@@ -99,6 +106,7 @@ public class BluetoothControl implements ServiceConnection {
         @Override
         public void connected() {
             Log.i("MainActivity", "Connected");
+            toaster("Connected");
             cFrag.isDeviceConnected = true;
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
         }
@@ -106,6 +114,7 @@ public class BluetoothControl implements ServiceConnection {
         @Override
         public void disconnected() {
             Log.i("MainActivity", "Disconnected");
+            toaster("Disconnected");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
 
@@ -114,6 +123,7 @@ public class BluetoothControl implements ServiceConnection {
         @Override
         public void failure(int status, Throwable error) {
             Log.e("MainActivity", "Error connecting", error);
+            toaster("Connecting error, please try again.");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
         }
@@ -164,17 +174,5 @@ public class BluetoothControl implements ServiceConnection {
 
         }
     };
-
-    public void registerModule() {
-        try {
-            final Switch switchModule = mwBoard.getModule(Switch.class);
-            final Led ledModule = mwBoard.getModule(Led.class);
-            //accelModule = mwBoard.getModule(Accelerometer.class);
-
-            switchModule.routeData().fromSensor();
-        } catch (UnsupportedModuleException e) {
-            Log.e("MainActivity", "Module not present", e);
-        }
-    }
 
 }
