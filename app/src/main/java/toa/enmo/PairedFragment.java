@@ -18,6 +18,8 @@ import com.mbientlab.metawear.module.MultiChannelTemperature;
 import com.mbientlab.metawear.module.MultiChannelTemperature.ExtThermistor;
 import com.mbientlab.metawear.module.Bmp280Barometer;
 import com.mbientlab.metawear.module.Bmp280Barometer.*;
+import com.mbientlab.metawear.module.Ltr329AmbientLight;
+import com.mbientlab.metawear.module.Ltr329AmbientLight.*;
 
 import java.util.List;
 
@@ -28,24 +30,28 @@ import java.util.List;
 public class PairedFragment extends Fragment {
 
     TextView tempText;
-    TextView accelText;
+    TextView stepText;
     TextView pressureText;
     TextView lightText;
+    Integer steps;
     String temperature;
     String pressure;
+    String light;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.paired_fragment, container, false);
+        steps = 0;
 
-        accelText = (TextView) v.findViewById(R.id.pairedAccelText);
+        stepText = (TextView) v.findViewById(R.id.pairedAccelText);
         tempText = (TextView) v.findViewById(R.id.pairedTempText);
         pressureText = (TextView) v.findViewById(R.id.pairedPressureText);
         lightText = (TextView) v.findViewById(R.id.pairedLightText);
 
-        accelTest();
+        stepTest();
         temperature();
         pressure();
+        light();
 
         // A timer with a delay, that sets the temperature after it's fetched
         final Handler handler = new Handler();
@@ -54,6 +60,8 @@ public class PairedFragment extends Fragment {
             public void run() {
                 tempText.setText(temperature);
                 pressureText.setText(pressure);
+                lightText.setText(light);
+                stepText.setText(Integer.toString(steps));
                 v.invalidate();
             }
         }, 300);
@@ -61,7 +69,7 @@ public class PairedFragment extends Fragment {
         return v;
     }
 
-    private void accelTest() {
+    private void stepTest() {
         try {
             final Bmi160Accelerometer bmi160AccModule = getBC().mwBoard.getModule(Bmi160Accelerometer.class);
 
@@ -109,11 +117,11 @@ public class PairedFragment extends Fragment {
                                 @Override
                                 public void process(Message msg) {
                                     Log.i("MainActivity", "You took a step");
+                                    steps = steps +1;
                                 }
                             });
                         }
                     });
-
         } catch (UnsupportedModuleException e) {
             Log.e("MainActivity", "Module not present", e);
         }
@@ -133,8 +141,6 @@ public class PairedFragment extends Fragment {
                     result.subscribe("temp_nrf_stream", new RouteManager.MessageHandler() {
                         @Override
                         public void process(Message msg) {
-                            Log.i("MainActivity", String.format("Ext thermistor: %.3fC",
-                                    msg.getData(Float.class)));
                             temperature = (msg.getData(Float.class).toString() + " °C");
                         }
                     });
@@ -169,12 +175,37 @@ public class PairedFragment extends Fragment {
                             result.subscribe("pressure_stream", new RouteManager.MessageHandler() {
                                 @Override
                                 public void process(Message msg) {
-                                    Log.i("MainActivity", String.format("Pressure= %.3fPa",
-                                            msg.getData(Float.class)));
                                     pressure = (msg.getData(Float.class).toString() + " Pa");
                                 }
                             });
                             bmp280Module.start();
+                        }
+                    });
+        } catch (UnsupportedModuleException e) {
+            Log.e("MainActivity", "Module not present", e);
+        }
+    }
+
+    public void light() {
+        try {
+            final Ltr329AmbientLight ltr329Module = getBC().mwBoard.getModule(Ltr329AmbientLight.class);
+
+            ltr329Module.configure().setGain(Gain.LTR329_GAIN_4X)
+                    .setIntegrationTime(IntegrationTime.LTR329_TIME_150MS)
+                    .setMeasurementRate(MeasurementRate.LTR329_RATE_100MS)
+                    .commit();
+
+            ltr329Module.routeData().fromSensor().stream("light_sub").commit()
+                    .onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
+                        @Override
+                        public void success(RouteManager result) {
+                            result.subscribe("light_sub", new RouteManager.MessageHandler() {
+                                @Override
+                                public void process(Message msg) {
+                                    light = (msg.getData(Long.class).toString() + " lx");
+                                }
+                            });
+                            ltr329Module.start();
                         }
                     });
         } catch (UnsupportedModuleException e) {

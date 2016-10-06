@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity  {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem connectionState = menu.findItem(R.id.action_connection);
+        connectionState.setVisible(false);
         if(bc.cFrag.connectedDevice != null){
             connectionState.setVisible(true);
         }else{
@@ -185,7 +186,6 @@ public class MainActivity extends AppCompatActivity  {
             }else{
             }
         }
-        connectionState.setVisible(false);
         return true;
     }
 
@@ -235,7 +235,9 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     public void onDestroy(){
-        bc.disconnectBoard();
+        if (cf.connectedDevice != null){
+            bc.disconnectBoard();
+        }
         unregisterReceiver(bc.mReceiver);
         sc.unregister();
         super.onDestroy();
