@@ -101,7 +101,6 @@ public class BluetoothControl implements ServiceConnection {
             Log.i("MainActivity", "Connected");
             cFrag.isDeviceConnected = true;
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
-
         }
 
         @Override

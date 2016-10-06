@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -46,7 +47,6 @@ public class MainActivity extends AppCompatActivity  {
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
     ProgressDialog mProgressDlg;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity  {
         sc = new SensorControl(this, df);
         bc = new BluetoothControl(this, pf, cf);
         sc.run();
-
         // Bind the Metawear Service
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
                 bc, Context.BIND_AUTO_CREATE);
@@ -103,6 +102,7 @@ public class MainActivity extends AppCompatActivity  {
                 ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
 
                 bc.BA.startDiscovery();
+                System.out.println("DISCOVERY STARTED!");
                 mProgressDlg.show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity  {
                 transaction.replace(R.id.frag_container, pf);
                 break;
         }
+        invalidateOptionsMenu();
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -170,6 +171,16 @@ public class MainActivity extends AppCompatActivity  {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem connectionState = menu.findItem(R.id.action_connection);
+        if(bc.cFrag.connectedDevice != null){
+            connectionState.setVisible(true);
+        }else{
+            if(connectionState.isVisible()){
+                connectionState.setVisible(false);
+            }else{
+            }
+        }
+        connectionState.setVisible(false);
         return true;
     }
 
@@ -182,6 +193,10 @@ public class MainActivity extends AppCompatActivity  {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_connection){
+            bc.toaster("Connected to: " + bc.cFrag.connectedDevice.getName());
             return true;
         }
 
