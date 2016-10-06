@@ -1,6 +1,7 @@
 package toa.enmo;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,7 +42,15 @@ public class PairedFragment extends Fragment {
 
         accelTest();
         temperature();
-        tempText.setText(temperature);
+
+        // A timer with a delay, that sets the temperature after it's fetched
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tempText.setText(temperature);
+            }
+        }, 300);
 
         return v;
     }
@@ -105,10 +114,10 @@ public class PairedFragment extends Fragment {
 
     }
 
-    private void temperature(){
+    private void temperature() {
         try {
-            final MultiChannelTemperature mcTempModule= getBC().mwBoard.getModule(MultiChannelTemperature.class);
-            final List<MultiChannelTemperature.Source> tempSources= mcTempModule.getSources();
+            final MultiChannelTemperature mcTempModule = getBC().mwBoard.getModule(MultiChannelTemperature.class);
+            final List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
 
             mcTempModule.routeData()
                     .fromSource(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE)).stream("temp_nrf_stream")
@@ -126,6 +135,7 @@ public class PairedFragment extends Fragment {
 
                     // Read temperature from the NRF soc chip
                     mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
+
                 }
             });
 
@@ -135,7 +145,7 @@ public class PairedFragment extends Fragment {
 
     }
 
-    private BluetoothControl getBC(){
-        return ((MainActivity)getActivity()).bc;
+    private BluetoothControl getBC() {
+        return ((MainActivity) getActivity()).bc;
     }
 }

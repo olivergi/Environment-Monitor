@@ -63,7 +63,7 @@ public class ConnectFragment extends Fragment {
                     });
                 } else {
                     adb.setTitle("You are already connected.");
-                    adb.setMessage("There can only be one connection.\nDo you want to disconnect?");
+                    adb.setMessage("There can be only one connection.\nDo you want to disconnect?");
                     adb.setPositiveButton("Disconnect", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Disconnect from the device

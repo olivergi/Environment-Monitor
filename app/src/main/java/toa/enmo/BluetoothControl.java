@@ -36,7 +36,7 @@ import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 public class BluetoothControl implements ServiceConnection {
     private Context activityContext;
     private PairedFragment pFrag;
-    private ConnectFragment cFrag;
+    ConnectFragment cFrag;
     private MetaWearBleService.LocalBinder serviceBinder;
     MetaWearBoard mwBoard;
     BluetoothAdapter BA;
