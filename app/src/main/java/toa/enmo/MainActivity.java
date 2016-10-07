@@ -1,6 +1,7 @@
 package toa.enmo;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -71,7 +72,6 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mProgressDlg.dismiss();
-
                 bc.BA.cancelDiscovery();
             }
         });
@@ -124,10 +124,26 @@ public class MainActivity extends AppCompatActivity  {
     public void blueToothAlert() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Disconnect from " + cf.connectedDevice.getName() + "?");
-        adb.setMessage("");
         adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 bc.disconnectBoard();
+            }
+        });
+
+        adb.setNegativeButton("No", null);
+        adb.show();
+
+    }
+
+    public void exitAlert() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Do you wish to exit?");
+        if (cf.isDeviceConnected){
+            adb.setMessage("Exiting will disconnect you from " + cf.connectedDevice.getName() + ".");
+        }
+        adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
             }
         });
 
@@ -232,7 +248,7 @@ public class MainActivity extends AppCompatActivity  {
                 changeFragment("hsfLeft");
             }
         } else {
-            this.finish();
+            exitAlert();
         }
     }
 
