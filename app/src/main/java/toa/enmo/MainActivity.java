@@ -53,7 +53,10 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (toolbar != null){
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
         sc = new SensorControl(this, df);
         bc = new BluetoothControl(this, pf, cf);
         sc.run();
@@ -142,16 +145,19 @@ public class MainActivity extends AppCompatActivity  {
         switch (fragment){
             case "hsf":
                 // Home Screen Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
                 break;
             case "hsfLeft":
                 // Home Screen Fragment (Left Animation)
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
                 break;
             case "cf":
                 // Connection Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, cf);
                 cf.theList = new ArrayList();
@@ -169,16 +175,19 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "af":
                 // Analysis Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, af);
                 break;
             case "df":
                 // Device Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, df);
                 break;
             case "pf":
                 // Paired Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, pf);
                 break;
@@ -217,6 +226,10 @@ public class MainActivity extends AppCompatActivity  {
         }
         if (id == R.id.action_connection){
             blueToothAlert();
+            return true;
+        }
+        if (id == android.R.id.home){
+            onBackPressed();
             return true;
         }
 
