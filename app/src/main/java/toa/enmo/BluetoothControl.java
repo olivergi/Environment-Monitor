@@ -109,6 +109,7 @@ public class BluetoothControl implements ServiceConnection {
             toaster("Connected");
             cFrag.isDeviceConnected = true;
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
+            refreshMenu();
         }
 
         @Override
@@ -117,7 +118,7 @@ public class BluetoothControl implements ServiceConnection {
             toaster("Disconnected");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
-
+            refreshMenu();
         }
 
         @Override
@@ -126,6 +127,7 @@ public class BluetoothControl implements ServiceConnection {
             toaster("Connecting error, please try again.");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
+            refreshMenu();
         }
     };
 
@@ -137,6 +139,11 @@ public class BluetoothControl implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
 
+    }
+
+    public void refreshMenu() {
+        MainActivity mActivity = (MainActivity)activityContext;
+        mActivity.invalidateOptionsMenu();
     }
 
      BroadcastReceiver mReceiver = new BroadcastReceiver() {

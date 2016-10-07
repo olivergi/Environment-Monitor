@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -63,12 +64,6 @@ public class MainActivity extends AppCompatActivity  {
         // UI Method to display the Home Screen Fragment
         changeFragment("hsf");
 
-        // If Bluetooth is not enabled, prompt the device to turn on
-        if (!bc.BA.isEnabled()){
-            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOn, 0);
-        }
-
         mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Scanning...");
         mProgressDlg.setCancelable(false);
@@ -107,7 +102,6 @@ public class MainActivity extends AppCompatActivity  {
                 ((ArrayAdapter) cf.lv.getAdapter()).notifyDataSetChanged();
 
                 bc.BA.startDiscovery();
-                System.out.println("DISCOVERY STARTED!");
                 mProgressDlg.show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -118,6 +112,28 @@ public class MainActivity extends AppCompatActivity  {
                 }, 10000);
                 break;
         }
+    }
+
+    public void checkBluetooth() {
+        if (!bc.BA.isEnabled()){
+            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(turnOn, 0);
+        }
+    }
+
+    public void blueToothAlert() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        adb.setTitle("Disconnect from " + cf.connectedDevice.getName() + "?");
+        adb.setMessage("");
+        adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                bc.disconnectBoard();
+            }
+        });
+
+        adb.setNegativeButton("No", null);
+        adb.show();
+
     }
 
     public void changeFragment (String fragment){
@@ -180,10 +196,9 @@ public class MainActivity extends AppCompatActivity  {
         connectionState.setVisible(false);
         if(bc.cFrag.connectedDevice != null){
             connectionState.setVisible(true);
-        }else{
+        } else {
             if(connectionState.isVisible()){
                 connectionState.setVisible(false);
-            }else{
             }
         }
         return true;
@@ -201,7 +216,7 @@ public class MainActivity extends AppCompatActivity  {
             return true;
         }
         if (id == R.id.action_connection){
-            bc.toaster("Connected to: " + bc.cFrag.connectedDevice.getName());
+            blueToothAlert();
             return true;
         }
 
@@ -224,12 +239,15 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
+        invalidateOptionsMenu();
         sc.register();
+        checkBluetooth();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        invalidateOptionsMenu();
         sc.unregister();
     }
 
