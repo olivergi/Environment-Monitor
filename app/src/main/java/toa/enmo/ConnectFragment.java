@@ -45,7 +45,6 @@ public class ConnectFragment extends Fragment {
 
                 if (!isDeviceConnected && !(deviceItem == connectedDevice)) {
                     adb.setTitle("Connect to this device?");
-                    adb.setMessage("");
                     adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // connect to the device
