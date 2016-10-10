@@ -41,7 +41,6 @@ public class BluetoothControl implements ServiceConnection {
     private MetaWearBleService.LocalBinder serviceBinder;
     MetaWearBoard mwBoard;
     BluetoothAdapter BA;
-    Led ledModule;
 
 
     public BluetoothControl (Context c, PairedFragment f, ConnectFragment cf) {
@@ -98,13 +97,8 @@ public class BluetoothControl implements ServiceConnection {
             System.out.println("Remotedevice is alive");
             mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
             mwBoard.setConnectionStateHandler(stateHandler);
-            try {
-                ledModule = mwBoard.getModule(Led.class);
-            } catch (UnsupportedModuleException e) {
-                e.printStackTrace();
-            }
         } else {
-            System.out.println("This fucker is null");
+            System.out.println("This is null");
         }
     }
 
@@ -115,7 +109,7 @@ public class BluetoothControl implements ServiceConnection {
             toaster("Connected");
             cFrag.isDeviceConnected = true;
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
-            ledModule.configureColorChannel(Led.ColorChannel.GREEN);
+            cFrag.connectDialog.dismiss();
             refreshMenu();
         }
 
@@ -125,7 +119,6 @@ public class BluetoothControl implements ServiceConnection {
             toaster("Disconnected");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
-            ledModule.configureColorChannel(Led.ColorChannel.RED);
             refreshMenu();
         }
 
@@ -135,6 +128,7 @@ public class BluetoothControl implements ServiceConnection {
             toaster("Connecting error, please try again.");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
+            cFrag.connectDialog.dismiss();
             refreshMenu();
         }
     };
@@ -189,5 +183,4 @@ public class BluetoothControl implements ServiceConnection {
 
         }
     };
-
 }

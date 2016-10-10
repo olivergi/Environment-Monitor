@@ -1,24 +1,10 @@
 package toa.enmo;
 
-import android.app.Activity;
-import android.app.Application;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -26,19 +12,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 import com.mbientlab.metawear.MetaWearBleService;
-import com.mbientlab.metawear.MetaWearBoard;
-import com.mbientlab.metawear.module.Led;
-
-import android.os.IBinder;
-
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  {
@@ -107,6 +86,7 @@ public class MainActivity extends AppCompatActivity  {
 
                 bc.BA.startDiscovery();
                 mProgressDlg.show();
+                // After 10 seconds dismiss the Progress Dialog
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
@@ -140,7 +120,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void exitAlert() {
-        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        AlertDialog.Builder adb = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom));
         adb.setTitle("Do you wish to exit?");
         if (cf.isDeviceConnected){
             adb.setMessage("Exiting will disconnect you from " + cf.connectedDevice.getName() + ".");
