@@ -106,9 +106,10 @@ public class BluetoothControl implements ServiceConnection {
         @Override
         public void connected() {
             Log.i("MainActivity", "Connected");
-            toaster("Connected");
+            toaster("Connected \uD83C\uDF1A");
             cFrag.isDeviceConnected = true;
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
+            ledColor();
             cFrag.connectDialog.dismiss();
             refreshMenu();
         }
@@ -116,7 +117,7 @@ public class BluetoothControl implements ServiceConnection {
         @Override
         public void disconnected() {
             Log.i("MainActivity", "Disconnected");
-            toaster("Disconnected");
+            toaster("Disconnected \uD83C\uDF1A");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
             refreshMenu();
@@ -183,4 +184,19 @@ public class BluetoothControl implements ServiceConnection {
 
         }
     };
+    public void ledColor() {
+        try {
+            ledModule = mwBoard.getModule(Led.class);
+        } catch (UnsupportedModuleException e) {
+        }
+        if (ledModule != null){
+            ledModule.configureColorChannel(Led.ColorChannel.GREEN)
+                    .setHighIntensity((byte) 31).setLowIntensity((byte) 31)
+                    .setHighTime((short) 1000).setPulseDuration((short) 1000)
+                    .setRepeatCount((byte) -1)
+                    .commit();
+            ledModule.play(false);
+        }
+    }
+
 }

@@ -69,7 +69,9 @@ public class ConnectFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int id) {
                             // Disconnect from the device
                             System.out.println("Disconnecting");
-
+                            if(getBC().ledModule != null){
+                                getBC().ledModule.stop(true);
+                            }
                             getBC().disconnectBoard();
 
                         }

@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity  {
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
     ProgressDialog mProgressDlg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -264,6 +265,9 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onDestroy(){
         if (cf.connectedDevice != null){
+            if(bc.ledModule != null){
+                bc.ledModule.stop(true);
+            }
             bc.disconnectBoard();
         }
         unregisterReceiver(bc.mReceiver);
