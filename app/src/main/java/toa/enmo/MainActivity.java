@@ -34,6 +34,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Toast;
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
+import com.mbientlab.metawear.module.Led;
 
 import android.os.IBinder;
 
