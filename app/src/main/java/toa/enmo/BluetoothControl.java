@@ -98,11 +98,6 @@ public class BluetoothControl implements ServiceConnection {
             System.out.println("Remotedevice is alive");
             mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
             mwBoard.setConnectionStateHandler(stateHandler);
-            try {
-                ledModule = mwBoard.getModule(Led.class);
-            } catch (UnsupportedModuleException e) {
-                e.printStackTrace();
-            }
         } else {
             System.out.println("This fucker is null");
         }
@@ -112,20 +107,19 @@ public class BluetoothControl implements ServiceConnection {
         @Override
         public void connected() {
             Log.i("MainActivity", "Connected");
-            toaster("Connected");
+            toaster("Connected \uD83C\uDF1A");
             cFrag.isDeviceConnected = true;
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
-            ledModule.configureColorChannel(Led.ColorChannel.GREEN);
+            ledColor();
             refreshMenu();
         }
 
         @Override
         public void disconnected() {
             Log.i("MainActivity", "Disconnected");
-            toaster("Disconnected");
+            toaster("Disconnected \uD83C\uDF1A");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
-            ledModule.configureColorChannel(Led.ColorChannel.RED);
             refreshMenu();
         }
 
@@ -189,5 +183,19 @@ public class BluetoothControl implements ServiceConnection {
 
         }
     };
+    public void ledColor() {
+        try {
+            ledModule = mwBoard.getModule(Led.class);
+        } catch (UnsupportedModuleException e) {
+        }
+        if (ledModule != null){
+            ledModule.configureColorChannel(Led.ColorChannel.GREEN)
+                    .setHighIntensity((byte) 31).setLowIntensity((byte) 31)
+                    .setHighTime((short) 1000).setPulseDuration((short) 1000)
+                    .setRepeatCount((byte) -1)
+                    .commit();
+            ledModule.play(false);
+        }
+    }
 
 }
