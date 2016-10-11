@@ -109,9 +109,18 @@ public class MainActivity extends AppCompatActivity  {
     public void blueToothAlert() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Disconnect from " + cf.connectedDevice.getName() + "?");
+
+        System.out.println("led turned off!!");
         adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                bc.disconnectBoard();
+                bc.ledModule.stop(true);
+                Handler handlerbt = new Handler();
+                handlerbt.postDelayed(new Runnable() {
+                    public void run() {
+                        mProgressDlg.dismiss();
+                        bc.disconnectBoard();
+                    }
+                }, 1000);
             }
         });
 
@@ -265,10 +274,14 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onDestroy(){
         if (cf.connectedDevice != null){
-            if(bc.ledModule != null){
                 bc.ledModule.stop(true);
-            }
-            bc.disconnectBoard();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    mProgressDlg.dismiss();
+                    bc.disconnectBoard();
+                }
+            }, 500);
         }
         unregisterReceiver(bc.mReceiver);
         sc.unregister();

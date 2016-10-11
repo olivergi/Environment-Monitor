@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Timer;
 
 
@@ -30,8 +32,9 @@ final class SensorControl implements SensorEventListener, Runnable {
     private Sensor gyroscope;
     private Context sensorContext;
     private DeviceFragment dfragment;
+    ArrayList<Float> tempList = new ArrayList<>();
 
-    SensorControl(Context context, DeviceFragment df){
+    public SensorControl(Context context, DeviceFragment df){
         sensorContext = context;
         dfragment = df;
     }
@@ -109,6 +112,7 @@ final class SensorControl implements SensorEventListener, Runnable {
             case Sensor.TYPE_AMBIENT_TEMPERATURE:
                 if (dfragment.tempText != null) {
                     float tempValue = event.values[0];
+                    tempList.add(tempValue);
                     dfragment.tempText.setText(round(tempValue, 2) + " °C");
                     
                 }
