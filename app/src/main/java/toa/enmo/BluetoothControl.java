@@ -29,6 +29,7 @@ import com.mbientlab.metawear.module.Led;
 import com.mbientlab.metawear.module.Switch;
 
 import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
+import static com.mbientlab.metawear.impl.characteristic.InfoRegister.LED;
 
 /**
  * Created by arttu on 10/3/16.
@@ -41,6 +42,7 @@ public class BluetoothControl implements ServiceConnection {
     private MetaWearBleService.LocalBinder serviceBinder;
     MetaWearBoard mwBoard;
     BluetoothAdapter BA;
+    Led asd;
 
 
     public BluetoothControl (Context c, PairedFragment f, ConnectFragment cf) {
