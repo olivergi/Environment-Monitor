@@ -2,6 +2,8 @@ package toa.enmo;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +25,6 @@ public class DeviceFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.device_fragment, container, false);
-
         accelText = (TextView) v.findViewById(R.id.accelText);
         tempText = (TextView) v.findViewById(R.id.temperatureText);
         pressureText = (TextView) v.findViewById(R.id.pressureText);

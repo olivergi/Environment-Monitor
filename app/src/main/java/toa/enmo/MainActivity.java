@@ -1,23 +1,10 @@
 package toa.enmo;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
@@ -25,18 +12,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 import com.mbientlab.metawear.MetaWearBleService;
-import com.mbientlab.metawear.MetaWearBoard;
-
-import android.os.IBinder;
-
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  {
@@ -48,12 +29,16 @@ public class MainActivity extends AppCompatActivity  {
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
     ProgressDialog mProgressDlg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (toolbar != null){
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
         sc = new SensorControl(this, df);
         bc = new BluetoothControl(this, pf, cf);
         sc.run();
@@ -71,7 +56,6 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mProgressDlg.dismiss();
-
                 bc.BA.cancelDiscovery();
             }
         });
@@ -103,6 +87,7 @@ public class MainActivity extends AppCompatActivity  {
 
                 bc.BA.startDiscovery();
                 mProgressDlg.show();
+                // After 10 seconds dismiss the Progress Dialog
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
@@ -124,10 +109,26 @@ public class MainActivity extends AppCompatActivity  {
     public void blueToothAlert() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Disconnect from " + cf.connectedDevice.getName() + "?");
-        adb.setMessage("");
         adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 bc.disconnectBoard();
+            }
+        });
+
+        adb.setNegativeButton("No", null);
+        adb.show();
+
+    }
+
+    public void exitAlert() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom));
+        adb.setTitle("Do you wish to exit?");
+        if (cf.isDeviceConnected){
+            adb.setMessage("Exiting will disconnect you from " + cf.connectedDevice.getName() + ".");
+        }
+        adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
             }
         });
 
@@ -142,16 +143,19 @@ public class MainActivity extends AppCompatActivity  {
         switch (fragment){
             case "hsf":
                 // Home Screen Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
                 break;
             case "hsfLeft":
                 // Home Screen Fragment (Left Animation)
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, hsf);
                 break;
             case "cf":
                 // Connection Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, cf);
                 cf.theList = new ArrayList();
@@ -169,16 +173,19 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "af":
                 // Analysis Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, af);
                 break;
             case "df":
                 // Device Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.left_enter, R.anim.left_exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, df);
                 break;
             case "pf":
                 // Paired Fragment
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
                 transaction.replace(R.id.frag_container, pf);
                 break;
@@ -219,6 +226,10 @@ public class MainActivity extends AppCompatActivity  {
             blueToothAlert();
             return true;
         }
+        if (id == android.R.id.home){
+            onBackPressed();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -232,7 +243,7 @@ public class MainActivity extends AppCompatActivity  {
                 changeFragment("hsfLeft");
             }
         } else {
-            this.finish();
+            exitAlert();
         }
     }
 
@@ -254,6 +265,9 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     public void onDestroy(){
         if (cf.connectedDevice != null){
+            if(bc.ledModule != null){
+                bc.ledModule.stop(true);
+            }
             bc.disconnectBoard();
         }
         unregisterReceiver(bc.mReceiver);
