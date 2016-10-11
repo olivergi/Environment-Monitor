@@ -42,7 +42,7 @@ public class BluetoothControl implements ServiceConnection {
     private MetaWearBleService.LocalBinder serviceBinder;
     MetaWearBoard mwBoard;
     BluetoothAdapter BA;
-    Led asd;
+    Led ledModule;
 
 
     public BluetoothControl (Context c, PairedFragment f, ConnectFragment cf) {
@@ -189,8 +189,8 @@ public class BluetoothControl implements ServiceConnection {
     public void ledColor() {
         try {
             ledModule = mwBoard.getModule(Led.class);
-        } catch (UnsupportedModuleException e) {
-        }
+        } catch (UnsupportedModuleException e) { }
+
         if (ledModule != null){
             ledModule.configureColorChannel(Led.ColorChannel.GREEN)
                     .setHighIntensity((byte) 31).setLowIntensity((byte) 31)

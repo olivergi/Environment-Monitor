@@ -110,6 +110,7 @@ final class SensorControl implements SensorEventListener, Runnable {
                 if (dfragment.tempText != null) {
                     float tempValue = event.values[0];
                     dfragment.tempText.setText(round(tempValue, 2) + " °C");
+                    
                 }
                 break;
             case Sensor.TYPE_PRESSURE:
