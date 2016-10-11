@@ -41,7 +41,7 @@ public class BluetoothControl implements ServiceConnection {
     private MetaWearBleService.LocalBinder serviceBinder;
     MetaWearBoard mwBoard;
     BluetoothAdapter BA;
-    Led ledModule;
+    Led ledModule = null;
 
 
     public BluetoothControl (Context c, PairedFragment f, ConnectFragment cf) {

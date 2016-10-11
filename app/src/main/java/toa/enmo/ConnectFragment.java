@@ -3,6 +3,7 @@ package toa.enmo;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -67,10 +68,14 @@ public class ConnectFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int id) {
                             // Disconnect from the device
                             System.out.println("Disconnecting");
-                            if(getBC().ledModule != null){
                                 getBC().ledModule.stop(true);
-                            }
-                            getBC().disconnectBoard();
+                                System.out.println("led turned off!!");
+                            Handler handlerbt = new Handler();
+                            handlerbt.postDelayed(new Runnable() {
+                                public void run() {
+                                    getBC().disconnectBoard();
+                                }
+                            }, 1000);
 
                         }
                     });

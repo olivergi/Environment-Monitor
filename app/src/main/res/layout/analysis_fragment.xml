@@ -15,6 +15,7 @@
         <com.jjoe64.graphview.GraphView
             android:layout_width="match_parent"
             android:layout_height="200dip"
+            android:background="@color/colorPrimaryDark"
             android:id="@+id/graph" />
 
     </LinearLayout>
@@ -22,15 +23,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:id="@+id/analysisText"
-            android:text="@string/analysis_text"
-            android:textSize="24sp"
-            android:textColor="@color/textGrey">
-        </TextView>
 
     </LinearLayout>
 
