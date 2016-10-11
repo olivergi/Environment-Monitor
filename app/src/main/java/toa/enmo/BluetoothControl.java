@@ -99,7 +99,7 @@ public class BluetoothControl implements ServiceConnection {
             mwBoard = serviceBinder.getMetaWearBoard(remoteDevice);
             mwBoard.setConnectionStateHandler(stateHandler);
         } else {
-            System.out.println("This fucker is null");
+            System.out.println("This is null");
         }
     }
 
@@ -111,6 +111,7 @@ public class BluetoothControl implements ServiceConnection {
             cFrag.isDeviceConnected = true;
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
             ledColor();
+            cFrag.connectDialog.dismiss();
             refreshMenu();
         }
 
@@ -129,6 +130,7 @@ public class BluetoothControl implements ServiceConnection {
             toaster("Connecting error, please try again.");
             cFrag.isDeviceConnected = false;
             cFrag.connectedDevice = null;
+            cFrag.connectDialog.dismiss();
             refreshMenu();
         }
     };

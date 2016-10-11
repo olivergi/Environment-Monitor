@@ -139,7 +139,6 @@ final class SensorControl implements SensorEventListener, Runnable {
                     (i == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM ? "MEDIUM" :
                             (i == SensorManager.SENSOR_STATUS_ACCURACY_LOW ? "LOW" : "UNRELIABLE")));
         } */
-        System.out.println("Accuracy Changed Called");
     }
 
     public void register(){

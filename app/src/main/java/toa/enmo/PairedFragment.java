@@ -13,6 +13,8 @@ import com.mbientlab.metawear.AsyncOperation;
 import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
+import com.mbientlab.metawear.data.CartesianFloat;
+import com.mbientlab.metawear.module.Bme280Humidity;
 import com.mbientlab.metawear.module.Bmi160Accelerometer;
 import com.mbientlab.metawear.module.MultiChannelTemperature;
 import com.mbientlab.metawear.module.MultiChannelTemperature.ExtThermistor;
@@ -30,25 +32,24 @@ import java.util.List;
 public class PairedFragment extends Fragment {
 
     TextView tempText;
-    TextView stepText;
+    TextView accelText;
     TextView pressureText;
     TextView lightText;
-    Integer steps;
     String temperature;
     String pressure;
     String light;
+    String acceleration;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.paired_fragment, container, false);
-        steps = 0;
 
-        stepText = (TextView) v.findViewById(R.id.pairedAccelText);
+        accelText = (TextView) v.findViewById(R.id.pairedAccelText);
         tempText = (TextView) v.findViewById(R.id.pairedTempText);
         pressureText = (TextView) v.findViewById(R.id.pairedPressureText);
         lightText = (TextView) v.findViewById(R.id.pairedLightText);
 
-        stepTest();
+        acceleration();
         temperature();
         pressure();
         light();
@@ -61,7 +62,7 @@ public class PairedFragment extends Fragment {
                 tempText.setText(temperature);
                 pressureText.setText(pressure);
                 lightText.setText(light);
-                stepText.setText(Integer.toString(steps));
+                accelText.setText(acceleration);
                 v.invalidate();
             }
         }, 300);
@@ -69,59 +70,38 @@ public class PairedFragment extends Fragment {
         return v;
     }
 
-    private void stepTest() {
+    private void acceleration() {
         try {
-            final Bmi160Accelerometer bmi160AccModule = getBC().mwBoard.getModule(Bmi160Accelerometer.class);
+            final Bmi160Accelerometer accModule = getBC().mwBoard.getModule(Bmi160Accelerometer.class);
 
-            bmi160AccModule.enableStepDetection();
-            System.out.println("Enabled Step Detector");
-
-            bmi160AccModule.configureAxisSampling()
+            // Set measurement range to +/- 16G
+            // Set output data rate to 100Hz
+            accModule.configureAxisSampling()
                     .setFullScaleRange(Bmi160Accelerometer.AccRange.AR_16G)
                     .setOutputDataRate(Bmi160Accelerometer.OutputDataRate.ODR_100_HZ)
                     .commit();
-            System.out.println("Configure Step Detector");
+            // enable axis sampling
+            accModule.enableAxisSampling();
 
-            bmi160AccModule.enableAxisSampling();
-
-            bmi160AccModule.enableStepDetection();
-
-            bmi160AccModule.configureStepDetection()
-                    // Set sensitivity to normal
-                    .setSensitivity(Bmi160Accelerometer.StepSensitivity.NORMAL)
-                    // Enable step counter
-                    .enableStepCounter()
-                    .commit();
-
-            bmi160AccModule.start();
-            System.out.println("Start Step Detector");
-
-            bmi160AccModule.routeData().fromStepCounter(false).stream("step_counter").commit()
+            accModule.routeData().fromHighFreqAxes().stream("high_freq").commit()
                     .onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
                         @Override
                         public void success(RouteManager result) {
-                            result.subscribe("step_counter", new RouteManager.MessageHandler() {
+                            result.subscribe("high_freq", new RouteManager.MessageHandler() {
                                 @Override
                                 public void process(Message msg) {
-                                    Log.i("MainActivity", "Steps= " + msg.getData(Integer.class));
+                                    Log.i("test", "high freq: " + msg.getData(CartesianFloat.class));
+                                    acceleration = (msg.getData(Float.class).toString());
+                                    sensorMsg(String.format(acceleration), "accel");
                                 }
                             });
-                            bmi160AccModule.readStepCounter(false);
+
+                            accModule.setOutputDataRate(200.f);
+                            accModule.enableAxisSampling();
+                            accModule.start();
                         }
                     });
-            bmi160AccModule.routeData().fromStepDetection().stream("step_detector").commit()
-                    .onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
-                        @Override
-                        public void success(RouteManager result) {
-                            result.subscribe("step_detector", new RouteManager.MessageHandler() {
-                                @Override
-                                public void process(Message msg) {
-                                    Log.i("MainActivity", "You took a step");
-                                    steps = steps +1;
-                                }
-                            });
-                        }
-                    });
+
         } catch (UnsupportedModuleException e) {
             Log.e("MainActivity", "Module not present", e);
         }
@@ -142,6 +122,7 @@ public class PairedFragment extends Fragment {
                         @Override
                         public void process(Message msg) {
                             temperature = (msg.getData(Float.class).toString() + " °C");
+                            sensorMsg(String.format(temperature), "temp");
                         }
                     });
 
@@ -176,6 +157,7 @@ public class PairedFragment extends Fragment {
                                 @Override
                                 public void process(Message msg) {
                                     pressure = (msg.getData(Float.class).toString() + " Pa");
+                                    sensorMsg(String.format(pressure), "pres");
                                 }
                             });
                             bmp280Module.start();
@@ -203,6 +185,7 @@ public class PairedFragment extends Fragment {
                                 @Override
                                 public void process(Message msg) {
                                     light = (msg.getData(Long.class).toString() + " lx");
+                                    sensorMsg(String.format(light), "light");
                                 }
                             });
                             ltr329Module.start();
@@ -211,6 +194,33 @@ public class PairedFragment extends Fragment {
         } catch (UnsupportedModuleException e) {
             Log.e("MainActivity", "Module not present", e);
         }
+    }
+
+    public void sensorMsg(String msg, final String sensor) {
+        final String reading = msg;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (sensor) {
+                    case "temp":
+                        System.out.println("setting temp: " + reading);
+                        tempText.setText(reading);
+                        break;
+                    case "pres":
+                        System.out.println("setting press: " + reading);
+                        pressureText.setText(reading);
+                        break;
+                    case "light":
+                        System.out.println("setting light: " + reading);
+                        lightText.setText(reading);
+                        break;
+                    case "accel":
+                        System.out.println("setting accel: " + reading);
+                        accelText.setText(reading);
+                        break;
+                }
+            }
+        });
     }
 
     private BluetoothControl getBC() {
