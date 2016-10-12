@@ -16,20 +16,12 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.mbientlab.metawear.AsyncOperation;
-import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
-import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
-import com.mbientlab.metawear.data.CartesianFloat;
-import com.mbientlab.metawear.module.Accelerometer;
-import com.mbientlab.metawear.module.Bmi160Accelerometer;
 import com.mbientlab.metawear.module.Led;
-import com.mbientlab.metawear.module.Switch;
 
 import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
-import static com.mbientlab.metawear.impl.characteristic.InfoRegister.LED;
 
 /**
  * Created by arttu on 10/3/16.
@@ -37,7 +29,7 @@ import static com.mbientlab.metawear.impl.characteristic.InfoRegister.LED;
 
 public class BluetoothControl implements ServiceConnection {
     private Context activityContext;
-    private PairedFragment pFrag;
+    private MetaFragment pFrag;
     ConnectFragment cFrag;
     private MetaWearBleService.LocalBinder serviceBinder;
     MetaWearBoard mwBoard;
@@ -45,7 +37,7 @@ public class BluetoothControl implements ServiceConnection {
     Led ledModule = null;
 
 
-    public BluetoothControl (Context c, PairedFragment f, ConnectFragment cf) {
+    public BluetoothControl (Context c, MetaFragment f, ConnectFragment cf) {
         activityContext = c;
         pFrag = f;
         cFrag = cf;

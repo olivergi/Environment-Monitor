@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity  {
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
-    PairedFragment pf = new PairedFragment();
+    MetaFragment pf = new MetaFragment();
     ProgressDialog mProgressDlg;
 
     @Override

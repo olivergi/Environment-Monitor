@@ -29,7 +29,7 @@ import java.util.List;
  * Created by iosdev on 23.9.2016.
  */
 
-public class PairedFragment extends Fragment {
+public class MetaFragment extends Fragment {
 
     TextView tempText;
     TextView accelText;

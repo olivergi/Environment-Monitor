@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.github.mikephil.charting.charts.LineChart;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.series.*;
@@ -20,22 +22,7 @@ public class AnalysisFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.analysis_fragment, container, false);
-        GraphView graph = (GraphView) v.findViewById(R.id.graph);
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
-
-        });
-
-        GridLabelRenderer glr = graph.getGridLabelRenderer();
-        glr.setGridColor(Color.WHITE);
-        graph.setTitle("Temperature in C");
-        graph.setTitleTextSize(40);
-        graph.setTitleColor(Color.WHITE);
-        glr.setVerticalLabelsColor(Color.WHITE);
-        glr.setHorizontalLabelsColor(Color.WHITE);
-        graph.addSeries(series);
-
-
-
+        LineChart chart = (LineChart) v.findViewById(R.id.chart);
 
         return v;
     }
