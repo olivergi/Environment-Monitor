@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Menu;
@@ -51,7 +52,6 @@ public class MainActivity extends AppCompatActivity  {
         // UI Method to display the Home Screen Fragment
         changeFragment("hsf");
 
-
         mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Scanning...");
         mProgressDlg.setCancelable(false);
@@ -62,18 +62,6 @@ public class MainActivity extends AppCompatActivity  {
                 bc.BA.cancelDiscovery();
             }
         });
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                accList.add(sc.tempAcc);
-                new Handler().postDelayed(this, 10000);
-                System.out.println("Here is the list: " + accList);
-                if(af.chart != null){
-                    af.addDataShit(sc.tempAcc, bc.acceler);
-                    af.notifyAllChanged();
-                }
-            }
-        }, 10000);
     }
 
     public void onClick(View v){
@@ -109,6 +97,25 @@ public class MainActivity extends AppCompatActivity  {
                         bc.BA.cancelDiscovery();
                     }
                 }, 10000);
+                break;
+            case R.id.accButton:
+                af.chart.setData(af.accData);
+                af.chart.invalidate();
+                break;
+            case R.id.pressButton:
+                af.chart.setData(af.pressData);
+                af.chart.invalidate();
+                break;
+            case R.id.lightButton:
+                af.chart.setData(af.lightData);
+                System.out.println("press data");
+                af.chart.invalidate();
+                break;
+            case R.id.tempButton:
+                af.chart.setData(af.tempData);
+                System.out.println("temppp press");
+                af.notifyAllChanged();
+                af.chart.invalidate();
                 break;
         }
     }

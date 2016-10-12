@@ -52,7 +52,10 @@ public class BluetoothControl implements ServiceConnection {
     String light;
     String acceleration;
 
-    float acceler;
+    float accValue;
+    float pressValue;
+    float lightValue;
+    float tempValue;
 
     public BluetoothControl (Context c, MetaFragment f, ConnectFragment cf) {
         activityContext = c;
@@ -237,7 +240,7 @@ public class BluetoothControl implements ServiceConnection {
                                 public void process(Message msg) {
                                     Log.i("test", "high freq: " + msg.getData(CartesianFloat.class));
                                     acceleration = (msg.getData(CartesianFloat.class).toString());
-                                    acceler = msg.getData(float.class);
+                                    accValue = msg.getData(float.class);
                                     pFrag.sensorMsg(acceleration, "accel");
                                 }
                             });
@@ -268,6 +271,8 @@ public class BluetoothControl implements ServiceConnection {
                         @Override
                         public void process(Message msg) {
                             temperature = (msg.getData(Float.class).toString() + " °C");
+                            tempValue = msg.getData(Float.class);
+                            System.out.println("ext temp: " + tempValue);
                             pFrag.sensorMsg(temperature, "temp");
                         }
                     });
@@ -305,6 +310,7 @@ public class BluetoothControl implements ServiceConnection {
                                     float press = msg.getData(Float.class);
                                     press = press / 100;
                                     pressure = (round(press, 2) + " mBar");
+                                    pressValue = (round(press, 2));
                                     pFrag.sensorMsg(pressure, "pres");
                                 }
                             });
@@ -335,6 +341,7 @@ public class BluetoothControl implements ServiceConnection {
                                     float lux = msg.getData(Long.class);
                                     lux = lux / 1000;
                                     light = (round(lux, 2) + " lx");
+                                    lightValue = round(lux, 2);
                                     pFrag.sensorMsg(light, "light");
                                 }
                             });
