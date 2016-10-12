@@ -66,6 +66,10 @@ public class AnalysisFragment extends Fragment {
 
         return v;
     }
+
+    public void initArray(){
+
+    }
     private SensorControl getSC(){
         return ((MainActivity)getActivity()).sc;
     }

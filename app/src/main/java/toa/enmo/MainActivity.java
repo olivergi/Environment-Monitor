@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity  {
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
-    PairedFragment pf = new PairedFragment();
+    MetaFragment mf = new MetaFragment();
     ProgressDialog mProgressDlg;
     ArrayList<Float> accList = new ArrayList<>();
 
@@ -38,12 +38,11 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null){
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         sc = new SensorControl(this, df);
-        bc = new BluetoothControl(this, pf, cf);
+        bc = new BluetoothControl(this, mf, cf);
         sc.run();
         // Bind the Metawear Service
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
@@ -208,7 +207,7 @@ public class MainActivity extends AppCompatActivity  {
                 // Paired Fragment
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
-                transaction.replace(R.id.frag_container, pf);
+                transaction.replace(R.id.frag_container, mf);
                 break;
         }
         invalidateOptionsMenu();
@@ -239,10 +238,6 @@ public class MainActivity extends AppCompatActivity  {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
         if (id == R.id.action_connection){
             blueToothAlert();
             return true;
