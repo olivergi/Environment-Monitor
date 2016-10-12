@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity  {
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
-    PairedFragment pf = new PairedFragment();
+    MetaFragment mf = new MetaFragment();
     ProgressDialog mProgressDlg;
 
     @Override
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity  {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         sc = new SensorControl(this, df);
-        bc = new BluetoothControl(this, pf, cf);
+        bc = new BluetoothControl(this, mf, cf);
         sc.run();
         // Bind the Metawear Service
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity  {
                 // Paired Fragment
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
-                transaction.replace(R.id.frag_container, pf);
+                transaction.replace(R.id.frag_container, mf);
                 break;
         }
         invalidateOptionsMenu();
