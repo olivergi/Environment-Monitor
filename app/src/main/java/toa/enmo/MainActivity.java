@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity  {
         // UI Method to display the Home Screen Fragment
         changeFragment("hsf");
 
+
         mProgressDlg = new ProgressDialog(this);
         mProgressDlg.setMessage("Scanning...");
         mProgressDlg.setCancelable(false);
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity  {
                 new Handler().postDelayed(this, 10000);
                 System.out.println("Here is the list: " + accList);
                 if(af.chart != null){
+                    af.addDataShit(sc.tempAcc, bc.acceler);
+                    af.notifyAllChanged();
                 }
             }
         }, 10000);

@@ -31,6 +31,7 @@ public class AnalysisFragment extends Fragment {
     int counter = 0;
     LineChart chart;
     LineData lineData;
+    LineData data;
     LineDataSet dataSetAccInt;
     LineDataSet dataSetAccExt;
     LineDataSet dataSetTempInt;
@@ -51,6 +52,7 @@ public class AnalysisFragment extends Fragment {
         chart.getAxisLeft().setTextColor(Color.WHITE);
         chart.getXAxis().setTextColor(Color.WHITE);
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        createDataShit();
         /*for (Float data : getMA().accList ) {
             // turn your data into Entry objects
             entriesAccInt.add(new Entry(counter * 10, data));
@@ -79,13 +81,30 @@ public class AnalysisFragment extends Fragment {
         return ((MainActivity)getActivity()).bc;
     }
 
+    public void notifyAllChanged() {
+        data.notifyDataChanged();
+        dataSetAccExt.notifyDataSetChanged();
+        dataSetAccInt.notifyDataSetChanged();
+
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+    }
+
 
     private MainActivity getMA() {
         return (MainActivity)getActivity();
     }
+
+    public void addDataShit(float intValue, float extValue) {
+        dataSetAccInt.addEntry(new Entry(counter * 10, intValue));
+        dataSetAccExt.addEntry(new Entry(counter * 10, extValue));
+        counter++;
+    }
+
     public void createDataShit(){
         entriesAccInt.add(new Entry(counter * 10, getSC().tempAcc));
-        //entriesAccExt.add(new Entry(counter * 10, getBC().acceleration));
+        entriesAccExt.add(new Entry(counter * 10, getBC().acceler));
+        counter++;
 
         dataSetAccInt = new LineDataSet(entriesAccInt, "Internal Acceleration");
         dataSetAccInt.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -94,7 +113,7 @@ public class AnalysisFragment extends Fragment {
         ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
         dataSets.add(dataSetAccInt);
         dataSets.add(dataSetAccExt);
-        LineData data = new LineData(dataSets);
+        data = new LineData(dataSets);
         chart.setData(data);
 
         dataSetAccInt.setValueTextColor(Color.WHITE);

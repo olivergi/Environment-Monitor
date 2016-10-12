@@ -29,6 +29,7 @@ import com.mbientlab.metawear.module.Led;
 import com.mbientlab.metawear.module.Ltr329AmbientLight;
 import com.mbientlab.metawear.module.MultiChannelTemperature;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
@@ -50,6 +51,8 @@ public class BluetoothControl implements ServiceConnection {
     String pressure;
     String light;
     String acceleration;
+
+    float acceler;
 
     public BluetoothControl (Context c, MetaFragment f, ConnectFragment cf) {
         activityContext = c;
@@ -234,6 +237,7 @@ public class BluetoothControl implements ServiceConnection {
                                 public void process(Message msg) {
                                     Log.i("test", "high freq: " + msg.getData(CartesianFloat.class));
                                     acceleration = (msg.getData(CartesianFloat.class).toString());
+                                    acceler = msg.getData(float.class);
                                     pFrag.sensorMsg(acceleration, "accel");
                                 }
                             });
@@ -298,7 +302,9 @@ public class BluetoothControl implements ServiceConnection {
                             result.subscribe("pressure_stream", new RouteManager.MessageHandler() {
                                 @Override
                                 public void process(Message msg) {
-                                    pressure = (msg.getData(Float.class).toString() + " Pa");
+                                    float press = msg.getData(Float.class);
+                                    press = press / 100;
+                                    pressure = (round(press, 2) + " mBar");
                                     pFrag.sensorMsg(pressure, "pres");
                                 }
                             });
@@ -326,7 +332,9 @@ public class BluetoothControl implements ServiceConnection {
                             result.subscribe("light_sub", new RouteManager.MessageHandler() {
                                 @Override
                                 public void process(Message msg) {
-                                    light = (msg.getData(Long.class).toString() + " lx");
+                                    float lux = msg.getData(Long.class);
+                                    lux = lux / 1000;
+                                    light = (round(lux, 2) + " lx");
                                     pFrag.sensorMsg(light, "light");
                                 }
                             });
@@ -336,6 +344,12 @@ public class BluetoothControl implements ServiceConnection {
         } catch (UnsupportedModuleException e) {
             Log.e("MainActivity", "Module not present", e);
         }
+    }
+
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 
 }
