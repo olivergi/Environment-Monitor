@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+
+import com.github.mikephil.charting.data.Entry;
 import com.mbientlab.metawear.MetaWearBleService;
 import java.util.ArrayList;
 
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity  {
     DeviceFragment df = new DeviceFragment();
     PairedFragment pf = new PairedFragment();
     ProgressDialog mProgressDlg;
+    ArrayList<Float> accList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +62,16 @@ public class MainActivity extends AppCompatActivity  {
                 bc.BA.cancelDiscovery();
             }
         });
-
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                accList.add(sc.tempAcc);
+                new Handler().postDelayed(this, 10000);
+                System.out.println("Here is the list: " + accList);
+                if(af.chart != null){
+                }
+            }
+        }, 10000);
     }
 
     public void onClick(View v){

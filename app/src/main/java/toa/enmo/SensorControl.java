@@ -32,7 +32,7 @@ final class SensorControl implements SensorEventListener, Runnable {
     private Sensor gyroscope;
     private Context sensorContext;
     private DeviceFragment dfragment;
-    ArrayList<Float> tempList = new ArrayList<>();
+    public float tempAcc;
 
     public SensorControl(Context context, DeviceFragment df){
         sensorContext = context;
@@ -102,31 +102,30 @@ final class SensorControl implements SensorEventListener, Runnable {
     public void onSensorChanged(SensorEvent event) {
         switch (event.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
-                if (dfragment.accelText != null) {
                     float accValue = event.values[0];
-                    if(accValue > 0) {
-                        dfragment.accelText.setText(round(accValue, 2) + " m/s/s");
+                float accValueTwo = event.values[1];
+                float accValueThree = event.values[2];
+                    tempAcc = accValueTwo;
+                    if(accValue > 0 && dfragment.accelText != null) {
+                        dfragment.accelText.setText(round(accValue, 2) + ", " + round(accValueTwo, 2) + ", " + round(accValueThree, 2) + " m/s²");
                     }
-                }
                 break;
             case Sensor.TYPE_AMBIENT_TEMPERATURE:
-                if (dfragment.tempText != null) {
                     float tempValue = event.values[0];
-                    tempList.add(tempValue);
+                if (dfragment.tempText != null) {
                     dfragment.tempText.setText(round(tempValue, 2) + " °C");
-                    
                 }
                 break;
             case Sensor.TYPE_PRESSURE:
+                    float pressValue = event.values[0];
                 if (dfragment.pressureText != null) {
-                    float tempValue = event.values[0];
-                    dfragment.pressureText.setText(round(tempValue, 2) + " mBar");
+                    dfragment.pressureText.setText(round(pressValue, 2) + " mBar");
                 }
                 break;
             case Sensor.TYPE_LIGHT:
+                    float lightValue = event.values[0];
                 if (dfragment.lightText != null) {
-                    float tempValue = event.values[0];
-                    dfragment.lightText.setText(round(tempValue, 2) + " lux");
+                    dfragment.lightText.setText(round(lightValue, 2) + " lux");
                 }
                 break;
         }
