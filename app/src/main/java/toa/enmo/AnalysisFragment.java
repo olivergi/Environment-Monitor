@@ -11,10 +11,6 @@ import android.view.ViewGroup;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 
-/**
- * Created by iosdev on 22.9.2016.
- */
-
 public class AnalysisFragment extends Fragment {
     View v;
     LineChart chart;
@@ -100,15 +96,6 @@ public class AnalysisFragment extends Fragment {
                 chart.invalidate();
                 break;
         }
-    }
-
-
-    private SensorControl getSC(){
-        return ((MainActivity)getActivity()).sc;
-    }
-
-    private BluetoothControl getBC(){
-        return ((MainActivity)getActivity()).bc;
     }
 
     private GraphControl getGC() {

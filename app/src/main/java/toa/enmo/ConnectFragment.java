@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
@@ -15,9 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class ConnectFragment extends Fragment {
@@ -48,6 +44,7 @@ public class ConnectFragment extends Fragment {
                 AlertDialog.Builder adb = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.AlertDialogCustom));
                 deviceItem = bluetoothDevices.get(position);
 
+                // Check if the device is connected and change the alert according to that
                 if (!isDeviceConnected && !(deviceItem == connectedDevice)) {
                     adb.setTitle("Connect to this device?");
                     adb.setPositiveButton("Yes", new DialogInterface.OnClickListener() {

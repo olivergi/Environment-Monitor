@@ -2,18 +2,12 @@ package toa.enmo;
 
 import android.content.Context;
 import android.graphics.Color;
-
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-
 import java.util.ArrayList;
-
-/**
- * Created by arttu on 10/13/16.
- */
 
 public class GraphControl {
 
@@ -48,22 +42,6 @@ public class GraphControl {
     public GraphControl(Context context, AnalysisFragment af) {
         this.activityContext = context;
         this.af = af;
-    }
-
-
-    public void addDataShit() {
-        dataSetAccInt.addEntry(new Entry(counter * 10, getSC().acceleration));
-        dataSetAccExt.addEntry(new Entry(counter * 10, getBC().accValue));
-
-        dataSetPressureInt.addEntry(new Entry(counter * 10, getSC().pressure));
-        dataSetPressureExt.addEntry(new Entry(counter * 10, getBC().pressValue));
-
-        dataSetLightInt.addEntry(new Entry(counter * 10, getSC().light));
-        dataSetLightExt.addEntry(new Entry(counter * 10, getBC().lightValue));
-
-        dataSetTempInt.addEntry(new Entry(counter * 10, getSC().temperature));
-        dataSetTempExt.addEntry(new Entry(counter * 10, getBC().tempValue));
-        counter++;
     }
 
     public void createDataShit() {
@@ -147,25 +125,6 @@ public class GraphControl {
         lightData = new LineData(lightDataSets);
         tempData = new LineData(tempDataSets);
     }
-
-
-    public void notifyAllChanged() {
-        dataSetAccExt.notifyDataSetChanged();
-        dataSetAccInt.notifyDataSetChanged();
-
-        dataSetPressureExt.notifyDataSetChanged();
-        dataSetPressureInt.notifyDataSetChanged();
-
-        dataSetLightExt.notifyDataSetChanged();
-        dataSetLightInt.notifyDataSetChanged();
-
-        dataSetTempExt.notifyDataSetChanged();
-        dataSetTempInt.notifyDataSetChanged();
-
-        //af.chart.notifyDataSetChanged();
-        // xuaf.chart.invalidate();
-    }
-
 
     private SensorControl getSC() {
         return ((MainActivity) activityContext).sc;

@@ -34,10 +34,6 @@ import java.util.List;
 
 import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
-/**
- * Created by arttu on 10/3/16.
- */
-
 public class BluetoothControl implements ServiceConnection {
     private Context activityContext;
     private MetaFragment mFrag;
@@ -68,6 +64,9 @@ public class BluetoothControl implements ServiceConnection {
         activityContext.registerReceiver(mReceiver, filter);
     }
 
+    /**
+     * Method for making a toast message
+     */
     public void toaster(final String s) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
 
@@ -94,6 +93,9 @@ public class BluetoothControl implements ServiceConnection {
         thread.start();
     }
 
+    /**
+     * Connect, disconnect, and retrieving functins for the MetaWear
+     */
     public void connectBoard() {
         mwBoard.connect();
     }
@@ -120,6 +122,9 @@ public class BluetoothControl implements ServiceConnection {
         }
     }
 
+    /**
+     * Start the external sensors' data streams
+     */
     public void activateSensors() {
         acceleration();
         pressure();
@@ -140,6 +145,9 @@ public class BluetoothControl implements ServiceConnection {
         tempThread.start();
     }
 
+    /**
+     * State handler for handling the MetaWear's connection
+     */
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler() {
         @Override
         public void connected() {
@@ -219,6 +227,9 @@ public class BluetoothControl implements ServiceConnection {
         }
     };
 
+    /**
+     * Method for chaning the MetaWear's LED color
+     */
     public void ledColor() {
         try {
             ledModule = mwBoard.getModule(Led.class);
@@ -235,9 +246,9 @@ public class BluetoothControl implements ServiceConnection {
     }
 
 
-    /*
-        External sensor methods
-    */
+    /**
+     * External Sensor methods
+     */
 
     public void acceleration() {
         try {
@@ -384,6 +395,10 @@ public class BluetoothControl implements ServiceConnection {
         }
     }
 
+    /**
+     * Method for rounding up external sensor data to
+     * make it look better on screen
+     */
     public static float round(float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);

@@ -12,14 +12,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-
-import com.github.mikephil.charting.data.Entry;
 import com.mbientlab.metawear.MetaWearBleService;
 import java.util.ArrayList;
 
@@ -33,7 +30,6 @@ public class MainActivity extends AppCompatActivity  {
     DeviceFragment df = new DeviceFragment();
     MetaFragment mf = new MetaFragment();
     ProgressDialog mProgressDlg;
-    ArrayList<Float> accList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +111,9 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+    /**
+     * Check if Bluetooth is on, if not, prompt the device
+     */
     public void checkBluetooth() {
         if (!bc.BA.isEnabled()){
             Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -122,6 +121,9 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+    /**
+     * Alert dialog for disconnecting from a device
+     */
     public void blueToothAlert() {
         AlertDialog.Builder adb = new AlertDialog.Builder(this);
         adb.setTitle("Disconnect from " + cf.connectedDevice.getName() + "?");
@@ -145,6 +147,9 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    /**
+     * Alert dialog for exiting the application
+     */
     public void exitAlert() {
         AlertDialog.Builder adb = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AlertDialogCustom));
         adb.setTitle("Do you wish to exit?");
@@ -162,6 +167,11 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    /**
+     * Method for changing the shown fragment on the view
+     *
+     * @param fragment Name of the fragment to change to
+     */
     public void changeFragment (String fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -255,6 +265,10 @@ public class MainActivity extends AppCompatActivity  {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Override the Device's own back button action to show an alert upon exiting
+     * and changing the fragment according to the view
+     */
     @Override
     public void onBackPressed() {
         if (!hsf.isVisible()){

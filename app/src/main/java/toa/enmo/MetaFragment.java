@@ -1,37 +1,12 @@
 package toa.enmo;
 
-/**
- * Created by iosdev on 14.10.2016.
- */
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.mbientlab.metawear.AsyncOperation;
-import com.mbientlab.metawear.Message;
-import com.mbientlab.metawear.RouteManager;
-import com.mbientlab.metawear.UnsupportedModuleException;
-import com.mbientlab.metawear.data.CartesianFloat;
-import com.mbientlab.metawear.module.Bme280Humidity;
-import com.mbientlab.metawear.module.Bmi160Accelerometer;
-import com.mbientlab.metawear.module.MultiChannelTemperature;
-import com.mbientlab.metawear.module.MultiChannelTemperature.ExtThermistor;
-import com.mbientlab.metawear.module.Bmp280Barometer;
-import com.mbientlab.metawear.module.Bmp280Barometer.*;
-import com.mbientlab.metawear.module.Ltr329AmbientLight;
-import com.mbientlab.metawear.module.Ltr329AmbientLight.*;
-
-import java.util.List;
-
-/**
- * Created by iosdev on 23.9.2016.
- */
 
 public class MetaFragment extends Fragment {
 
@@ -74,6 +49,12 @@ public class MetaFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Method for updating the view about the sensor values
+     *
+     * @param msg    What sensor data is acquired
+     * @param sensor To what text field the data is inserted
+     */
     public void sensorMsg(String msg, final String sensor) {
         final String reading = msg;
         getMC().runOnUiThread(new Runnable() {

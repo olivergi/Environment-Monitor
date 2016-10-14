@@ -1,23 +1,11 @@
 package toa.enmo;
-/**
- * Created by Teemu on 27.9.2016.
- */
-import android.app.Fragment;
+
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Timer;
-
 
 final class SensorControl implements SensorEventListener, Runnable {
     private SensorManager sm;
@@ -43,6 +31,9 @@ final class SensorControl implements SensorEventListener, Runnable {
         dfragment = df;
     }
 
+    /**
+     * Check for sensors and set the sensor if the device has one
+     */
     @Override
     public void run() {
         sm = (SensorManager) sensorContext.getSystemService(Context.SENSOR_SERVICE);
@@ -52,6 +43,7 @@ final class SensorControl implements SensorEventListener, Runnable {
         } else {
             System.out.println("No ACCELEOMETER Sensor");
         }
+
         if(sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null){
             ambientTemp = sm.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         } else {
@@ -138,14 +130,9 @@ final class SensorControl implements SensorEventListener, Runnable {
         }
     }
 
-
     @Override
     public final void onAccuracyChanged(Sensor sensor, int i) {
-        /*if(dfragment.isVisible()){
-            dfragment.accText.setText(i == SensorManager.SENSOR_STATUS_ACCURACY_HIGH ? "HIGH" :
-                    (i == SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM ? "MEDIUM" :
-                            (i == SensorManager.SENSOR_STATUS_ACCURACY_LOW ? "LOW" : "UNRELIABLE")));
-        } */
+        // Nothing to do here
     }
 
     public void register(){
@@ -179,6 +166,10 @@ final class SensorControl implements SensorEventListener, Runnable {
         sm.unregisterListener(this);
     }
 
+
+    /**
+     * Method for rounding the sensor values
+     */
     public static float round(float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
