@@ -100,25 +100,18 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 }, 10000);
                 break;
-           /* case R.id.accButton:
-                af.chart.setData(af.accData);
-                af.chart.invalidate();
+            case R.id.accButton:
+                af.updateChart("acc");
                 break;
             case R.id.pressButton:
-                af.chart.setData(af.pressData);
-                af.chart.invalidate();
+                af.updateChart("press");
                 break;
             case R.id.lightButton:
-                af.chart.setData(af.lightData);
-                System.out.println("press data");
-                af.chart.invalidate();
+                af.updateChart("light");
                 break;
             case R.id.tempButton:
-                af.chart.setData(af.tempData);
-                System.out.println("temppp press");
-                af.notifyAllChanged();
-                af.chart.invalidate();
-                break;*/
+                af.updateChart("temp");
+                break;
         }
     }
 
