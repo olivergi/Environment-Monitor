@@ -9,17 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.series.*;
-
-import java.util.ArrayList;
 
 /**
  * Created by iosdev on 22.9.2016.
@@ -29,6 +18,7 @@ public class AnalysisFragment extends Fragment {
     View v;
     LineChart chart;
     Thread graphThread;
+    String updateString = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,8 +32,7 @@ public class AnalysisFragment extends Fragment {
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         chart.getLegend().setTextColor(Color.WHITE);
 
-        getGC().createDataShit();
-        chart.setData(getGC().tempData);
+        updateChart("temp");
 
         if (graphThread == null) {
             graphThread = new Thread() {
@@ -55,7 +44,7 @@ public class AnalysisFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     getGC().createDataShit();
-                                    chart.setData(getGC().tempData);
+                                    updateChart(updateString);
                                     chart.notifyDataSetChanged();
                                     chart.invalidate();
                                 }
@@ -69,8 +58,44 @@ public class AnalysisFragment extends Fragment {
             graphThread.start();
         }
 
-
         return v;
+    }
+
+    public void updateChart(String data) {
+        switch (data) {
+            case "temp":
+                updateString = "temp";
+                getGC().createDataShit();
+                chart.setData(getGC().tempData);
+                chart.setDescription("Temperature");
+                chart.notifyDataSetChanged();
+                chart.invalidate();
+                break;
+            case "acc":
+                updateString = "acc";
+                getGC().createDataShit();
+                chart.setData(getGC().accData);
+                chart.setDescription("Acceleration");
+                chart.notifyDataSetChanged();
+                chart.invalidate();
+                break;
+            case "press":
+                updateString = "press";
+                getGC().createDataShit();
+                chart.setData(getGC().pressData);
+                chart.setDescription("Pressure");
+                chart.notifyDataSetChanged();
+                chart.invalidate();
+                break;
+            case "light":
+                updateString = "light";
+                getGC().createDataShit();
+                chart.setData(getGC().lightData);
+                chart.setDescription("Light");
+                chart.notifyDataSetChanged();
+                chart.invalidate();
+                break;
+        }
     }
 
 
