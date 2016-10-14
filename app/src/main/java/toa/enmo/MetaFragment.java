@@ -76,7 +76,7 @@ public class MetaFragment extends Fragment {
 
     public void sensorMsg(String msg, final String sensor) {
         final String reading = msg;
-        getActivity().runOnUiThread(new Runnable() {
+        getMC().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 switch (sensor) {

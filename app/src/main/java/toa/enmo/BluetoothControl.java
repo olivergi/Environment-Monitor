@@ -40,7 +40,7 @@ import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
 public class BluetoothControl implements ServiceConnection {
     private Context activityContext;
-    private MetaFragment pFrag;
+    private MetaFragment mFrag;
     ConnectFragment cFrag;
     private MetaWearBleService.LocalBinder serviceBinder;
     MetaWearBoard mwBoard;
@@ -57,9 +57,9 @@ public class BluetoothControl implements ServiceConnection {
     float lightValue;
     float tempValue;
 
-    public BluetoothControl (Context c, MetaFragment f, ConnectFragment cf) {
+    public BluetoothControl(Context c, MetaFragment mf, ConnectFragment cf) {
         activityContext = c;
-        pFrag = f;
+        mFrag = mf;
         cFrag = cf;
 
         // Assign the bluetooth adapter and register the broadcast receiver
@@ -259,10 +259,13 @@ public class BluetoothControl implements ServiceConnection {
                             result.subscribe("high_freq", new RouteManager.MessageHandler() {
                                 @Override
                                 public void process(Message msg) {
-                                    Log.i("test", "high freq: " + msg.getData(CartesianFloat.class));
                                     acceleration = (msg.getData(CartesianFloat.class).toString());
-                                    //accValue = msg.getData(CartesianFloat.class);
-                                    pFrag.sensorMsg(acceleration, "accel");
+                                    String[] accA = acceleration.split(",");
+                                    accValue = Float.parseFloat(accA[1]);
+                                    System.out.println("accvalue: " + accValue);
+                                    if (mFrag.isVisible()) {
+                                        mFrag.sensorMsg(acceleration, "acc");
+                                    }
                                 }
                             });
 
@@ -294,7 +297,9 @@ public class BluetoothControl implements ServiceConnection {
                             temperature = (msg.getData(Float.class).toString() + " °C");
                             tempValue = msg.getData(Float.class);
                             System.out.println("ext temp: " + tempValue);
-                            pFrag.sensorMsg(temperature, "temp");
+                            if (mFrag.isVisible()) {
+                                mFrag.sensorMsg(temperature, "temp");
+                            }
                         }
                     });
 
@@ -332,7 +337,9 @@ public class BluetoothControl implements ServiceConnection {
                                     press = press / 100;
                                     pressure = (round(press, 2) + " mBar");
                                     pressValue = (round(press, 2));
-                                    pFrag.sensorMsg(pressure, "pres");
+                                    if (mFrag.isVisible()) {
+                                        mFrag.sensorMsg(pressure, "pres");
+                                    }
                                 }
                             });
                             bmp280Module.start();
@@ -363,7 +370,10 @@ public class BluetoothControl implements ServiceConnection {
                                     lux = lux / 1000;
                                     light = (round(lux, 2) + " lx");
                                     lightValue = round(lux, 2);
-                                    pFrag.sensorMsg(light, "light");
+                                    if (mFrag.isVisible()) {
+                                        mFrag.sensorMsg(light, "light");
+                                    }
+
                                 }
                             });
                             ltr329Module.start();
