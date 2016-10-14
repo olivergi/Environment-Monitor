@@ -36,7 +36,11 @@ public class AnalysisFragment extends Fragment {
         v = inflater.inflate(R.layout.analysis_fragment, container, false);
 
         chart = (LineChart) v.findViewById(R.id.chart);
-
+        chart.setDescriptionColor(Color.WHITE);
+        chart.getAxisLeft().setTextColor(Color.WHITE);
+        chart.getXAxis().setTextColor(Color.WHITE);
+        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.getLegend().setTextColor(Color.WHITE);
 
         getGC().createDataShit();
         chart.setData(getGC().tempData);

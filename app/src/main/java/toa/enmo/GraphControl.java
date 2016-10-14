@@ -79,24 +79,52 @@ public class GraphControl {
 
         dataSetAccInt = new LineDataSet(entriesAccInt, "Internal Acceleration");
         dataSetAccInt.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSetAccInt.setColor(Color.MAGENTA);
+        dataSetAccInt.setDrawCircles(false);
+        dataSetAccInt.setDrawValues(false);
+
         dataSetAccExt = new LineDataSet(entriesAccExt, "External Acceleration");
         dataSetAccExt.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSetAccExt.setColor(Color.GREEN);
+        dataSetAccExt.setDrawCircles(false);
+        dataSetAccExt.setDrawValues(false);
 
         dataSetPressureInt = new LineDataSet(entriesPresInt, "Internal Pressure");
         dataSetPressureInt.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSetPressureInt.setColor(Color.MAGENTA);
+        dataSetPressureInt.setDrawCircles(false);
+        dataSetPressureInt.setDrawValues(false);
+
         dataSetPressureExt = new LineDataSet(entriesPresExt, "External Pressure");
         dataSetPressureExt.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSetPressureExt.setColor(Color.GREEN);
+        dataSetPressureExt.setDrawCircles(false);
+        dataSetPressureExt.setDrawValues(false);
 
         dataSetLightInt = new LineDataSet(entriesLightInt, "Internal Lux");
         dataSetLightInt.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSetLightInt.setColor(Color.MAGENTA);
+        dataSetLightInt.setDrawCircles(false);
+        dataSetLightInt.setDrawValues(false);
+
         dataSetLightExt = new LineDataSet(entriesLightExt, "External Lux");
         dataSetLightExt.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSetLightExt.setColor(Color.GREEN);
+        dataSetLightExt.setDrawCircles(false);
+        dataSetLightExt.setDrawValues(false);
 
         dataSetTempInt = new LineDataSet(entriesTempInt, "Internal Temperature");
         dataSetTempInt.setAxisDependency(YAxis.AxisDependency.LEFT);
+        dataSetTempInt.setColor(Color.MAGENTA);
+        dataSetTempInt.setDrawCircles(false);
+        dataSetTempInt.setDrawValues(false);
+
         dataSetTempExt = new LineDataSet(entriesTempExt, "External Temperature");
         dataSetTempExt.setAxisDependency(YAxis.AxisDependency.LEFT);
-
+        dataSetTempExt.setColor(Color.GREEN);
+        dataSetTempExt.setDrawCircles(false);
+        dataSetTempExt.setValueTextColor(Color.WHITE);
+        dataSetTempExt.setDrawValues(false);
 
         ArrayList<ILineDataSet> accDataSets = new ArrayList<>();
         accDataSets.add(dataSetAccInt);
