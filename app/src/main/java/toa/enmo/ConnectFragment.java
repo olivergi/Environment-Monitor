@@ -64,8 +64,7 @@ public class ConnectFragment extends Fragment {
                         }
                     });
                 } else {
-                    adb.setTitle("You are already connected.");
-                    adb.setMessage("There can be only one connection.\nDo you want to disconnect?");
+                    adb.setTitle("You are already connected");
                     adb.setPositiveButton("Disconnect", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Disconnect from the device
@@ -82,7 +81,7 @@ public class ConnectFragment extends Fragment {
                         }
                     });
                 }
-                adb.setNegativeButton("No", null);
+                adb.setNegativeButton("Cancel", null);
                 adb.show();
             }
         });

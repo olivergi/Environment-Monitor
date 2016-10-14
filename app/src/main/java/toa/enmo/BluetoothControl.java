@@ -16,10 +16,21 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.mbientlab.metawear.AsyncOperation;
+import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.MetaWearBleService;
 import com.mbientlab.metawear.MetaWearBoard;
+import com.mbientlab.metawear.RouteManager;
 import com.mbientlab.metawear.UnsupportedModuleException;
+import com.mbientlab.metawear.data.CartesianFloat;
+import com.mbientlab.metawear.module.Bmi160Accelerometer;
+import com.mbientlab.metawear.module.Bmp280Barometer;
 import com.mbientlab.metawear.module.Led;
+import com.mbientlab.metawear.module.Ltr329AmbientLight;
+import com.mbientlab.metawear.module.MultiChannelTemperature;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 import static com.mbientlab.metawear.MetaWearBoard.ConnectionStateHandler;
 
@@ -36,6 +47,15 @@ public class BluetoothControl implements ServiceConnection {
     BluetoothAdapter BA;
     Led ledModule = null;
 
+    String temperature;
+    String pressure;
+    String light;
+    String acceleration;
+
+    float accValue;
+    float pressValue;
+    float lightValue;
+    float tempValue;
 
     public BluetoothControl (Context c, MetaFragment f, ConnectFragment cf) {
         activityContext = c;
@@ -48,7 +68,6 @@ public class BluetoothControl implements ServiceConnection {
         activityContext.registerReceiver(mReceiver, filter);
     }
 
-
     public void toaster(final String s) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
 
@@ -57,6 +76,11 @@ public class BluetoothControl implements ServiceConnection {
                 Toast.makeText(activityContext, s, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void refreshMenu() {
+        MainActivity mActivity = (MainActivity)activityContext;
+        mActivity.invalidateOptionsMenu();
     }
 
     public void createConnection() {
@@ -96,6 +120,26 @@ public class BluetoothControl implements ServiceConnection {
         }
     }
 
+    public void activateSensors() {
+        acceleration();
+        pressure();
+        light();
+        // Create a thread to update the temperature at all times
+        Thread tempThread = new Thread() {
+            public void run() {
+                while (cFrag.isDeviceConnected) {
+                    try {
+                        sleep(1000);
+                        temperature();
+                    } catch (Exception e) {
+                        Log.d("Error", "tempthread:" + e);
+                    }
+                }
+            }
+        };
+        tempThread.start();
+    }
+
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler() {
         @Override
         public void connected() {
@@ -105,6 +149,7 @@ public class BluetoothControl implements ServiceConnection {
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
             ledColor();
             cFrag.connectDialog.dismiss();
+            activateSensors();
             refreshMenu();
         }
 
@@ -136,11 +181,6 @@ public class BluetoothControl implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
 
-    }
-
-    public void refreshMenu() {
-        MainActivity mActivity = (MainActivity)activityContext;
-        mActivity.invalidateOptionsMenu();
     }
 
      BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -178,6 +218,7 @@ public class BluetoothControl implements ServiceConnection {
 
         }
     };
+
     public void ledColor() {
         try {
             ledModule = mwBoard.getModule(Led.class);
@@ -191,6 +232,152 @@ public class BluetoothControl implements ServiceConnection {
                     .commit();
             ledModule.play(false);
         }
+    }
+
+
+    /*
+        External sensor methods
+    */
+
+    public void acceleration() {
+        try {
+            final Bmi160Accelerometer accModule = mwBoard.getModule(Bmi160Accelerometer.class);
+
+            // Set measurement range to +/- 16G
+            // Set output data rate to 100Hz
+            accModule.configureAxisSampling()
+                    .setFullScaleRange(Bmi160Accelerometer.AccRange.AR_16G)
+                    .setOutputDataRate(Bmi160Accelerometer.OutputDataRate.ODR_100_HZ)
+                    .commit();
+            // enable axis sampling
+            accModule.enableAxisSampling();
+
+            accModule.routeData().fromHighFreqAxes().stream("high_freq").commit()
+                    .onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
+                        @Override
+                        public void success(RouteManager result) {
+                            result.subscribe("high_freq", new RouteManager.MessageHandler() {
+                                @Override
+                                public void process(Message msg) {
+                                    Log.i("test", "high freq: " + msg.getData(CartesianFloat.class));
+                                    acceleration = (msg.getData(CartesianFloat.class).toString());
+                                    //accValue = msg.getData(CartesianFloat.class);
+                                    pFrag.sensorMsg(acceleration, "accel");
+                                }
+                            });
+
+                            accModule.setOutputDataRate(200.f);
+                            accModule.enableAxisSampling();
+                            accModule.start();
+                        }
+                    });
+
+        } catch (UnsupportedModuleException e) {
+            Log.e("MainActivity", "Module not present", e);
+        }
+
+    }
+
+    public void temperature() {
+        try {
+            final MultiChannelTemperature mcTempModule = mwBoard.getModule(MultiChannelTemperature.class);
+            final List<MultiChannelTemperature.Source> tempSources = mcTempModule.getSources();
+
+            mcTempModule.routeData()
+                    .fromSource(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE)).stream("temp_nrf_stream")
+                    .commit().onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
+                @Override
+                public void success(RouteManager result) {
+                    result.subscribe("temp_nrf_stream", new RouteManager.MessageHandler() {
+                        @Override
+                        public void process(Message msg) {
+                            temperature = (msg.getData(Float.class).toString() + " °C");
+                            tempValue = msg.getData(Float.class);
+                            System.out.println("ext temp: " + tempValue);
+                            pFrag.sensorMsg(temperature, "temp");
+                        }
+                    });
+
+                    // Read temperature from the NRF soc chip
+                    mcTempModule.readTemperature(tempSources.get(MultiChannelTemperature.MetaWearRChannel.NRF_DIE));
+
+                }
+            });
+
+        } catch (UnsupportedModuleException e) {
+            Log.e("MainActivity", "Module not present", e);
+        }
+
+    }
+
+    public void pressure() {
+        try {
+
+            final Bmp280Barometer bmp280Module = mwBoard.getModule(Bmp280Barometer.class);
+
+            bmp280Module.configure()
+                    .setFilterMode(Bmp280Barometer.FilterMode.AVG_4)
+                    .setPressureOversampling(Bmp280Barometer.OversamplingMode.LOW_POWER)
+                    .setStandbyTime(Bmp280Barometer.StandbyTime.TIME_125)
+                    .commit();
+
+            bmp280Module.routeData().fromPressure().stream("pressure_stream").commit()
+                    .onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
+                        @Override
+                        public void success(RouteManager result) {
+                            result.subscribe("pressure_stream", new RouteManager.MessageHandler() {
+                                @Override
+                                public void process(Message msg) {
+                                    float press = msg.getData(Float.class);
+                                    press = press / 100;
+                                    pressure = (round(press, 2) + " mBar");
+                                    pressValue = (round(press, 2));
+                                    pFrag.sensorMsg(pressure, "pres");
+                                }
+                            });
+                            bmp280Module.start();
+                        }
+                    });
+        } catch (UnsupportedModuleException e) {
+            Log.e("MainActivity", "Module not present", e);
+        }
+    }
+
+    public void light() {
+        try {
+            final Ltr329AmbientLight ltr329Module = mwBoard.getModule(Ltr329AmbientLight.class);
+
+            ltr329Module.configure().setGain(Ltr329AmbientLight.Gain.LTR329_GAIN_4X)
+                    .setIntegrationTime(Ltr329AmbientLight.IntegrationTime.LTR329_TIME_150MS)
+                    .setMeasurementRate(Ltr329AmbientLight.MeasurementRate.LTR329_RATE_100MS)
+                    .commit();
+
+            ltr329Module.routeData().fromSensor().stream("light_sub").commit()
+                    .onComplete(new AsyncOperation.CompletionHandler<RouteManager>() {
+                        @Override
+                        public void success(RouteManager result) {
+                            result.subscribe("light_sub", new RouteManager.MessageHandler() {
+                                @Override
+                                public void process(Message msg) {
+                                    float lux = msg.getData(Long.class);
+                                    lux = lux / 1000;
+                                    light = (round(lux, 2) + " lx");
+                                    lightValue = round(lux, 2);
+                                    pFrag.sensorMsg(light, "light");
+                                }
+                            });
+                            ltr329Module.start();
+                        }
+                    });
+        } catch (UnsupportedModuleException e) {
+            Log.e("MainActivity", "Module not present", e);
+        }
+    }
+
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 
 }

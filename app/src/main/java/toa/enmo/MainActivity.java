@@ -12,35 +12,40 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+
+import com.github.mikephil.charting.data.Entry;
 import com.mbientlab.metawear.MetaWearBleService;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity  {
     SensorControl sc;
     BluetoothControl bc;
+    GraphControl gc;
     HomeScreenFragment hsf = new HomeScreenFragment();
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
     DeviceFragment df = new DeviceFragment();
-    MetaFragment pf = new MetaFragment();
+    MetaFragment mf = new MetaFragment();
     ProgressDialog mProgressDlg;
+    ArrayList<Float> accList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null){
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         sc = new SensorControl(this, df);
-        bc = new BluetoothControl(this, pf, cf);
+        bc = new BluetoothControl(this, mf, cf);
+        gc = new GraphControl(this, af);
         sc.run();
         // Bind the Metawear Service
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
@@ -59,7 +64,6 @@ public class MainActivity extends AppCompatActivity  {
                 bc.BA.cancelDiscovery();
             }
         });
-
     }
 
     public void onClick(View v){
@@ -96,6 +100,25 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 }, 10000);
                 break;
+           /* case R.id.accButton:
+                af.chart.setData(af.accData);
+                af.chart.invalidate();
+                break;
+            case R.id.pressButton:
+                af.chart.setData(af.pressData);
+                af.chart.invalidate();
+                break;
+            case R.id.lightButton:
+                af.chart.setData(af.lightData);
+                System.out.println("press data");
+                af.chart.invalidate();
+                break;
+            case R.id.tempButton:
+                af.chart.setData(af.tempData);
+                System.out.println("temppp press");
+                af.notifyAllChanged();
+                af.chart.invalidate();
+                break;*/
         }
     }
 
@@ -196,7 +219,7 @@ public class MainActivity extends AppCompatActivity  {
                 // Paired Fragment
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit);
-                transaction.replace(R.id.frag_container, pf);
+                transaction.replace(R.id.frag_container, mf);
                 break;
         }
         invalidateOptionsMenu();
@@ -227,10 +250,6 @@ public class MainActivity extends AppCompatActivity  {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
         if (id == R.id.action_connection){
             blueToothAlert();
             return true;
