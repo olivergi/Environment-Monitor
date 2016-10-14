@@ -54,24 +54,6 @@ public class MetaFragment extends Fragment {
         light = getBC().light;
         acceleration = getBC().acceleration;
 
-        getBC().acceleration();
-        getBC().pressure();
-        getBC().light();
-        // Create a thread to update the temperature at all times
-        Thread tempThread = new Thread(){
-            public void run(){
-                while(getMC().mf.isVisible()){
-                    try {
-                        sleep(1000);
-                        getBC().temperature();
-                    } catch (Exception e){
-                        Log.d("Error", "tempthread:" + e);
-                    }
-                }
-            }
-        };
-        tempThread.start();
-
         // A timer with a delay, that sets the sensor values after they are fetched
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

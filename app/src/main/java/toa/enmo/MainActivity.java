@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity  {
     SensorControl sc;
     BluetoothControl bc;
+    GraphControl gc;
     HomeScreenFragment hsf = new HomeScreenFragment();
     ConnectFragment cf = new ConnectFragment();
     AnalysisFragment af = new AnalysisFragment();
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity  {
 
         sc = new SensorControl(this, df);
         bc = new BluetoothControl(this, mf, cf);
+        gc = new GraphControl(this, af);
         sc.run();
         // Bind the Metawear Service
         getApplicationContext().bindService(new Intent(this, MetaWearBleService.class),
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 }, 10000);
                 break;
-            case R.id.accButton:
+           /* case R.id.accButton:
                 af.chart.setData(af.accData);
                 af.chart.invalidate();
                 break;
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity  {
                 System.out.println("temppp press");
                 af.notifyAllChanged();
                 af.chart.invalidate();
-                break;
+                break;*/
         }
     }
 

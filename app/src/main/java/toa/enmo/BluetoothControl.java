@@ -120,6 +120,26 @@ public class BluetoothControl implements ServiceConnection {
         }
     }
 
+    public void activateSensors() {
+        acceleration();
+        pressure();
+        light();
+        // Create a thread to update the temperature at all times
+        Thread tempThread = new Thread() {
+            public void run() {
+                while (cFrag.isDeviceConnected) {
+                    try {
+                        sleep(1000);
+                        temperature();
+                    } catch (Exception e) {
+                        Log.d("Error", "tempthread:" + e);
+                    }
+                }
+            }
+        };
+        tempThread.start();
+    }
+
     private final ConnectionStateHandler stateHandler = new ConnectionStateHandler() {
         @Override
         public void connected() {
@@ -129,6 +149,7 @@ public class BluetoothControl implements ServiceConnection {
             cFrag.connectedDevice = cFrag.bluetoothDevices.get(cFrag.connectedDeviceIndex);
             ledColor();
             cFrag.connectDialog.dismiss();
+            activateSensors();
             refreshMenu();
         }
 
@@ -240,7 +261,7 @@ public class BluetoothControl implements ServiceConnection {
                                 public void process(Message msg) {
                                     Log.i("test", "high freq: " + msg.getData(CartesianFloat.class));
                                     acceleration = (msg.getData(CartesianFloat.class).toString());
-                                    accValue = msg.getData(float.class);
+                                    //accValue = msg.getData(CartesianFloat.class);
                                     pFrag.sensorMsg(acceleration, "accel");
                                 }
                             });
