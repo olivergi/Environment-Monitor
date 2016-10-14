@@ -5,22 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="toa.enmo.AnalysisFragment"
-    android:weightSum="100">
+    android:weightSum="10"
+    android:background="@color/grey">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/graphLayout"
-        android:background="@color/grey"
-        android:weightSum="100"
+        android:weightSum="10"
         android:orientation="vertical"
-        android:layout_weight="100">
+        android:layout_weight="10">
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chart"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="60"
+            android:layout_weight="6"
             android:layout_gravity="top"
             android:background="@color/grey"/>
     </LinearLayout>
@@ -28,36 +28,91 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:background="@color/grey">
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:layout_weight="0.26">
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/accButton"
-            android:onClick="onClick"
-            android:text="Acc" />
+            android:orientation="horizontal"
+            android:weightSum="10">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/pressButton"
-            android:onClick="onClick"
-            android:text="Pres" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="5"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/lightGrey"
+                android:orientation="vertical"
+                android:id="@+id/tempButton"
+                android:onClick="onClick">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/temperature"
+                    android:layout_gravity="center"/>
+                </LinearLayout>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:id="@+id/lightButton"
-            android:text="Light" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="5"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:background="@color/lightGrey"
+                android:orientation="vertical"
+                android:id="@+id/accButton"
+                android:onClick="onClick">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/speed"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+        </LinearLayout>
 
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tempButton"
-            android:onClick="onClick"
-            android:text="Temp" />
+            android:orientation="horizontal"
+            android:weightSum="10">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="5"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:background="@color/lightGrey"
+                android:orientation="vertical"
+                android:id="@+id/pressButton"
+                android:onClick="onClick">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/pressure"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="5"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="15dp"
+                android:background="@color/lightGrey"
+                android:orientation="vertical"
+                android:id="@+id/lightButton"
+                android:onClick="onClick">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/light"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
