@@ -63,6 +63,7 @@ public class AnalysisFragment extends Fragment {
                 updateString = "temp";
                 getGC().createDataShit();
                 chart.setData(getGC().tempData);
+                chart.setDescription("Temperature");
                 chart.notifyDataSetChanged();
                 chart.invalidate();
                 break;
@@ -70,6 +71,7 @@ public class AnalysisFragment extends Fragment {
                 updateString = "acc";
                 getGC().createDataShit();
                 chart.setData(getGC().accData);
+                chart.setDescription("Acceleration");
                 chart.notifyDataSetChanged();
                 chart.invalidate();
                 break;
@@ -77,6 +79,7 @@ public class AnalysisFragment extends Fragment {
                 updateString = "press";
                 getGC().createDataShit();
                 chart.setData(getGC().pressData);
+                chart.setDescription("Pressure");
                 chart.notifyDataSetChanged();
                 chart.invalidate();
                 break;
@@ -84,6 +87,7 @@ public class AnalysisFragment extends Fragment {
                 updateString = "light";
                 getGC().createDataShit();
                 chart.setData(getGC().lightData);
+                chart.setDescription("Light");
                 chart.notifyDataSetChanged();
                 chart.invalidate();
                 break;
