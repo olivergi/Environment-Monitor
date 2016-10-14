@@ -67,15 +67,15 @@ public class GraphControl {
     }
 
     public void createDataShit() {
-        entriesAccInt.add(new Entry(counter * 10, getSC().acceleration));
-        entriesAccExt.add(new Entry(counter * 10, getBC().accValue));
-        entriesPresInt.add(new Entry(counter * 10, getSC().pressure));
-        entriesPresExt.add(new Entry(counter * 10, getBC().pressValue));
-        entriesLightInt.add(new Entry(counter * 10, getSC().light));
-        entriesLightExt.add(new Entry(counter * 10, getBC().lightValue));
-        entriesTempInt.add(new Entry(counter * 10, getSC().temperature));
-        entriesTempExt.add(new Entry(counter * 10, getBC().tempValue));
-        counter++;
+        entriesAccInt.add(new Entry(counter , getSC().acceleration));
+        entriesAccExt.add(new Entry(counter , getBC().accValue));
+        entriesPresInt.add(new Entry(counter , getSC().pressure));
+        entriesPresExt.add(new Entry(counter , getBC().pressValue));
+        entriesLightInt.add(new Entry(counter , getSC().light));
+        entriesLightExt.add(new Entry(counter , getBC().lightValue));
+        entriesTempInt.add(new Entry(counter , getSC().temperature));
+        entriesTempExt.add(new Entry(counter , getBC().tempValue));
+        counter = counter+2;
 
         dataSetAccInt = new LineDataSet(entriesAccInt, "Internal Acceleration");
         dataSetAccInt.setAxisDependency(YAxis.AxisDependency.LEFT);

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
 
 /**
  * Created by iosdev on 22.9.2016.
@@ -30,7 +31,10 @@ public class AnalysisFragment extends Fragment {
         chart.getAxisLeft().setTextColor(Color.WHITE);
         chart.getXAxis().setTextColor(Color.WHITE);
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.getXAxis().setDrawLabels(true);
         chart.getLegend().setTextColor(Color.WHITE);
+        chart.getLegend().setTextSize(12);
+        chart.setDescriptionTextSize(12);
 
         updateChart("temp");
 
@@ -39,7 +43,7 @@ public class AnalysisFragment extends Fragment {
                 public void run() {
                     while (true) {
                         try {
-                            sleep(3000);
+                            sleep(2000);
                             getMA().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
